@@ -16,7 +16,7 @@
 
     // ── Production backend URL (update after Render deploy) ──────
     // Replace this with your actual Render URL once deployed
-    const PRODUCTION_API_URL = 'https://enoc-portal-backend.onrender.com/api';
+    const PRODUCTION_API_URL = 'https://enoc-portal.onrender.com/api';
 
     // ── Auto-detect environment ───────────────────────────────────
     // Priority order:
