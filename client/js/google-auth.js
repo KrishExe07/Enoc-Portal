@@ -17,7 +17,7 @@ const googleAuth = {
     //
     // Current Client ID: <YOUR_GOOGLE_CLIENT_ID>
     // ═══════════════════════════════════════════════════════════════════════════════
-    clientId: '868247521851-uamt0ounlrtmg65ik02la5jop5vse68e.apps.googleusercontent.com',
+    clientId: '868247521851-iqqo7j373g2vubp61nhga5sdscceet4a.apps.googleusercontent.com',
 
     // Domain validation rules
     // Students: @charusat.edu.in (or subdomains like @it.charusat.edu.in)
