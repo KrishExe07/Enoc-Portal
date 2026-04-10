@@ -21,7 +21,7 @@ let warnings = 0;
 // 1. Check backend/.env file
 // ═══════════════════════════════════════════════════════════════
 console.log('📋 [1/5] Checking backend/.env file...');
-const envPath = path.join(__dirname, 'backend', '.env');
+const envPath = path.join(process.cwd(), 'backend', '.env');
 if (!fs.existsSync(envPath)) {
     console.log('   ❌ ERROR: backend/.env file not found!');
     console.log('   💡 Solution: Copy backend/.env.example to backend/.env');
@@ -70,7 +70,7 @@ console.log('');
 // 2. Check js/google-auth.js
 // ═══════════════════════════════════════════════════════════════
 console.log('📋 [2/5] Checking js/google-auth.js...');
-const googleAuthPath = path.join(__dirname, 'js', 'google-auth.js');
+const googleAuthPath = path.join(process.cwd(), 'client', 'js', 'google-auth.js');
 if (!fs.existsSync(googleAuthPath)) {
     console.log('   ❌ ERROR: js/google-auth.js not found!');
     errors++;
@@ -106,7 +106,7 @@ console.log('');
 // 3. Check js/config.js
 // ═══════════════════════════════════════════════════════════════
 console.log('📋 [3/5] Checking js/config.js...');
-const configPath = path.join(__dirname, 'js', 'config.js');
+const configPath = path.join(process.cwd(), 'client', 'js', 'config.js');
 if (!fs.existsSync(configPath)) {
     console.log('   ❌ ERROR: js/config.js not found!');
     errors++;
@@ -141,7 +141,7 @@ console.log('');
 // 4. Check backend routes
 // ═══════════════════════════════════════════════════════════════
 console.log('📋 [4/5] Checking backend/routes/auth.js...');
-const authRoutePath = path.join(__dirname, 'backend', 'routes', 'auth.js');
+const authRoutePath = path.join(process.cwd(), 'backend', 'routes', 'auth.js');
 if (!fs.existsSync(authRoutePath)) {
     console.log('   ❌ ERROR: backend/routes/auth.js not found!');
     errors++;
@@ -179,7 +179,7 @@ console.log('');
 // 5. Check package.json and dependencies
 // ═══════════════════════════════════════════════════════════════
 console.log('📋 [5/5] Checking dependencies...');
-const backendPackagePath = path.join(__dirname, 'backend', 'package.json');
+const backendPackagePath = path.join(process.cwd(), 'backend', 'package.json');
 if (!fs.existsSync(backendPackagePath)) {
     console.log('   ❌ ERROR: backend/package.json not found!');
     errors++;
@@ -208,7 +208,7 @@ if (!fs.existsSync(backendPackagePath)) {
 }
 
 // Check if node_modules exists
-const nodeModulesPath = path.join(__dirname, 'backend', 'node_modules');
+const nodeModulesPath = path.join(process.cwd(), 'backend', 'node_modules');
 if (!fs.existsSync(nodeModulesPath)) {
     console.log('   ⚠️  WARNING: backend/node_modules not found');
     console.log('   💡 Run: cd backend && npm install');

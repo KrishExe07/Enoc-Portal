@@ -17,7 +17,7 @@ const googleAuth = {
     //
     // Current Client ID: <YOUR_GOOGLE_CLIENT_ID>
     // ═══════════════════════════════════════════════════════════════════════════════
-    clientId: '<YOUR_GOOGLE_CLIENT_ID>',
+    clientId: '868247521851-cp87aelb3mrkkm33kot9htpflj0ti2ds.apps.googleusercontent.com',
 
     // Domain validation rules
     // Students: @charusat.edu.in (or subdomains like @it.charusat.edu.in)
@@ -63,6 +63,8 @@ const googleAuth = {
             console.error('Google Identity Services not loaded');
             return;
         }
+
+        console.log('🔑 Initializing Google Sign-In with Client ID:', this.clientId);
 
         google.accounts.id.initialize({
             client_id: this.clientId,
