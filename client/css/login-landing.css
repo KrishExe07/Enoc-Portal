@@ -1,0 +1,435 @@
+/* ==============================================
+   LOGIN LANDING PAGE STYLES
+   Modern University Login with Background
+   ============================================== */
+
+/* Import Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+/* Login Landing Page Container */
+.login-landing-page {
+    position: relative;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+/* Background with Blur and Overlay */
+.login-landing-page::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: url('../images/campus-gate.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    filter: blur(4px);
+    z-index: 1;
+}
+
+.login-landing-page::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.7);
+    z-index: 2;
+}
+
+/* Main Content Container */
+.login-content-wrapper {
+    position: relative;
+    z-index: 3;
+    display: flex;
+    width: 100%;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 2rem;
+    gap: 2rem;
+}
+
+/* Left Section - Badge and Logo Strip */
+.left-section {
+    display: flex;
+    gap: 0;
+    align-items: center;
+}
+
+/* 25 Years Excellence Badge */
+.excellence-badge {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+}
+
+.excellence-badge img {
+    max-width: 280px;
+    width: 100%;
+    height: auto;
+    object-fit: contain;
+    filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.15));
+}
+
+/* Orange Vertical Logo Strip */
+.logo-strip {
+    background: linear-gradient(180deg, #E87722 0%, #D66A1A 100%);
+    width: 90px;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: repeat(5, 1fr);
+    gap: 0.5rem;
+    padding: 1.5rem 0.5rem;
+    box-shadow: 0 4px 20px rgba(232, 119, 34, 0.3);
+    min-height: 600px;
+    align-items: center;
+    justify-items: center;
+}
+
+.logo-strip .institution-logo {
+    width: 70px;
+    height: 70px;
+    background: white;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.3rem;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.logo-strip .institution-logo:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.logo-strip .institution-logo img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+/* Make last logo span 2 columns to center it */
+.logo-strip .institution-logo:last-child {
+    grid-column: 1 / -1;
+}
+
+/* Right Section - Login Card */
+.right-section {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 2rem;
+}
+
+/* Floating Login Card */
+.login-card {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+    padding: 3rem 2.5rem;
+    max-width: 450px;
+    width: 100%;
+    animation: floatIn 0.6s ease-out;
+}
+
+@keyframes floatIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* University Logo in Card */
+.login-card .university-logo {
+    display: block;
+    max-width: 280px;
+    width: 100%;
+    height: auto;
+    margin: 0 auto 1.5rem;
+}
+
+/* Card Title */
+.login-card h2 {
+    text-align: center;
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: #4b5563;
+    margin-bottom: 2rem;
+    line-height: 1.4;
+}
+
+/* Input Group with Icons */
+.input-group {
+    position: relative;
+    margin-bottom: 1.5rem;
+}
+
+.input-group .input-icon {
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #6b7280;
+    font-size: 1.1rem;
+    pointer-events: none;
+}
+
+.input-group input {
+    width: 100%;
+    padding: 0.875rem 1rem 0.875rem 3rem;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-family: 'Poppins', sans-serif;
+    transition: all 0.3s ease;
+    background: #f9fafb;
+}
+
+.input-group input:focus {
+    outline: none;
+    border-color: #1e3a8a;
+    background: white;
+    box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.1);
+}
+
+.input-group input::placeholder {
+    color: #9ca3af;
+}
+
+/* Password Toggle */
+.password-toggle {
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: #6b7280;
+    cursor: pointer;
+    font-size: 1.1rem;
+    padding: 0.25rem;
+    transition: color 0.2s ease;
+}
+
+.password-toggle:hover {
+    color: #1e3a8a;
+}
+
+/* Forgot Password Link */
+.forgot-password-wrapper {
+    text-align: right;
+    margin-bottom: 1.5rem;
+}
+
+.forgot-password-link {
+    color: #6b7280;
+    font-size: 0.875rem;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.forgot-password-link:hover {
+    color: #E87722;
+    text-decoration: underline;
+}
+
+/* Login Button */
+.login-btn {
+    width: 100%;
+    padding: 0.95rem 1.5rem;
+    background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    font-family: 'Poppins', sans-serif;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    box-shadow: 0 4px 12px rgba(30, 58, 138, 0.3);
+}
+
+.login-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(30, 58, 138, 0.4);
+    background: linear-gradient(135deg, #1e3a8a 0%, #1d4ed8 100%);
+}
+
+.login-btn:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 8px rgba(30, 58, 138, 0.3);
+}
+
+.login-btn .btn-icon {
+    font-size: 1.2rem;
+}
+
+/* Social Media Icons (Right Side) */
+.social-icons {
+    position: fixed;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.social-icon {
+    width: 45px;
+    height: 45px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    text-decoration: none;
+    font-size: 1.3rem;
+    transition: transform 0.3s ease;
+}
+
+.social-icon:hover {
+    transform: translateX(-5px);
+}
+
+.social-icon.facebook {
+    background: #3b5998;
+}
+
+.social-icon.instagram {
+    background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+}
+
+.social-icon.twitter {
+    background: #1DA1F2;
+}
+
+.social-icon.linkedin {
+    background: #0077b5;
+}
+
+.social-icon.youtube {
+    background: #FF0000;
+}
+
+.social-icon.portal {
+    background: #4a5568;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+    .excellence-badge img {
+        max-width: 220px;
+    }
+
+    .logo-strip {
+        width: 75px;
+        min-height: 500px;
+    }
+
+    .logo-strip .institution-logo {
+        width: 60px;
+        height: 60px;
+    }
+
+    .login-card {
+        padding: 2.5rem 2rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .login-content-wrapper {
+        flex-direction: column;
+        padding: 1rem;
+    }
+
+    .left-section {
+        flex-direction: column;
+        width: 100%;
+        justify-content: center;
+        margin-bottom: 1rem;
+    }
+
+    .excellence-badge {
+        display: none;
+        /* Hide on mobile for cleaner look */
+    }
+
+    .logo-strip {
+        grid-template-columns: repeat(3, 1fr);
+        grid-template-rows: repeat(3, 1fr);
+        width: 100%;
+        min-height: auto;
+        padding: 1rem;
+    }
+
+    .logo-strip .institution-logo {
+        width: 50px;
+        height: 50px;
+    }
+
+    .right-section {
+        padding: 0;
+    }
+
+    .login-card {
+        padding: 2rem 1.5rem;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+    }
+
+    .login-card h2 {
+        font-size: 1rem;
+    }
+
+    .social-icons {
+        display: none;
+        /* Hide social icons on mobile */
+    }
+}
+
+@media (max-width: 480px) {
+    .login-card {
+        padding: 1.5rem 1.25rem;
+    }
+
+    .login-card .university-logo {
+        max-width: 220px;
+    }
+
+    .input-group input {
+        padding: 0.75rem 0.875rem 0.75rem 2.75rem;
+        font-size: 0.9rem;
+    }
+
+    .login-btn {
+        padding: 0.875rem 1.25rem;
+        font-size: 0.95rem;
+    }
+}
+
+
+
+/* Hide original header and footer on login page */
+.login-page-only .main-header,
+.login-page-only .main-footer {
+    display: none;
+}

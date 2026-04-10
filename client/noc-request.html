@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NOC Request | e-Governance Portal</title>
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="stylesheet" href="css/forms.css">
+    <link rel="stylesheet" href="css/noc-request.css">
+</head>
+
+<body>
+    <!-- Header -->
+    <header class="dashboard-header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo-section">
+                    <img src="images/charusat-logo.png" alt="CHARUSAT Logo" class="logo-img">
+                    <h2>e-Governance Portal</h2>
+                </div>
+                <div class="user-section">
+                    <div class="user-info">
+                        <span class="user-name" id="userName">Student</span>
+                        <span class="user-role">Student</span>
+                    </div>
+                    <button class="btn btn-secondary" onclick="window.location.href='student-dashboard.html'">Back to
+                        Dashboard</button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="form-container">
+        <div class="container">
+            <div class="form-wrapper">
+                <!-- Form Header -->
+                <div class="form-header">
+                    <h3>NOC Request Application</h3>
+                    <p>3-step process to generate your No Objection Certificate</p>
+                </div>
+
+                <!-- Progress Steps -->
+                <div class="progress-steps">
+                    <div class="step active" data-step="1">
+                        <div class="step-number">1</div>
+                        <div class="step-label">Company Selection</div>
+                    </div>
+                    <div class="step" data-step="2">
+                        <div class="step-number">2</div>
+                        <div class="step-label">NOC Details</div>
+                    </div>
+                    <div class="step" data-step="3">
+                        <div class="step-number">3</div>
+                        <div class="step-label">Review & Submit</div>
+                    </div>
+                </div>
+
+                <!-- Form -->
+                <form id="nocRequestForm" class="application-form">
+                    <!-- Step 1: Company Selection -->
+                    <div class="form-step active" data-step="1">
+                        <h4 class="step-title">Select Company</h4>
+
+                        <div class="info-box">
+                            <p><strong>Note:</strong> Select your internship company from the approved list. If your
+                                company is not listed, select "Other Company" and enter the company name manually.</p>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="companySelect">Select Company <span class="required">*</span></label>
+                            <select id="companySelect" name="companySelect" required>
+                                <option value="">-- Select Company --</option>
+                                <!-- Companies will be loaded dynamically -->
+                            </select>
+                        </div>
+
+                        <!-- Company Details Display (Auto-filled) -->
+                        <div id="companyDetailsDisplay" style="display: none;">
+                            <div class="company-details-box">
+                                <h5>Company Details</h5>
+                                <div class="detail-row">
+                                    <span class="detail-label">Company Name:</span>
+                                    <span class="detail-value" id="displayCompanyName">-</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span class="detail-label">Company Details:</span>
+                                    <span class="detail-value" id="displayCompanyDetails">-</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span class="detail-label">Website:</span>
+                                    <span class="detail-value" id="displayWebsite">-</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span class="detail-label">Technology:</span>
+                                    <span class="detail-value" id="displayTechnology">-</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span class="detail-label">Paid Internship Note:</span>
+                                    <span class="detail-value" id="displayInternshipNote">-</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- New Company Form (Shown when "Other" is selected) -->
+                        <div id="newCompanyForm" style="display: none;">
+                            <h5 style="margin-top: 1.5rem; color: var(--primary-color);">New Company Details</h5>
+                            <p style="font-size: 0.9rem; color: var(--gray-600); margin-bottom: 1rem;">This company name
+                                will be submitted for admin approval.</p>
+
+                            <div class="form-group">
+                                <label for="newCompanyName">Company Name <span class="required">*</span></label>
+                                <input type="text" id="newCompanyName" name="newCompanyName"
+                                    placeholder="Enter company name">
+                            </div>
+                        </div>
+
+                        <div class="form-navigation">
+                            <button type="button" class="btn btn-primary btn-next" id="step1NextBtn" disabled>Next
+                                Step</button>
+                        </div>
+                    </div>
+
+                    <!-- Step 2: NOC Form -->
+                    <div class="form-step" data-step="2">
+                        <h4 class="step-title">NOC Details</h4>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="studentId">Student ID <span class="required">*</span></label>
+                                <input type="text" id="studentId" name="studentId" readonly>
+                            </div>
+                            <div class="form-group">
+                                <label for="studentName">Student Name <span class="required">*</span></label>
+                                <input type="text" id="studentName" name="studentName" readonly>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="semester">Semester <span class="required">*</span></label>
+                                <select id="semester" name="semester" required>
+                                    <option value="">-- Select Semester --</option>
+                                    <option value="4">4th Semester</option>
+                                    <option value="6">6th Semester</option>
+                                    <option value="8">8th Semester</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="collegeEmail">College Email <span class="required">*</span></label>
+                                <input type="email" id="collegeEmail" name="collegeEmail" readonly>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="mobileNumber">Mobile Number <span class="required">*</span></label>
+                                <input type="tel" id="mobileNumber" name="mobileNumber" placeholder="+91-XXXXXXXXXX"
+                                    pattern="[0-9+\-\s]+" required>
+                            </div>
+                            <div class="form-group">
+                                <!-- Empty for spacing -->
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="startDate">Internship Start Date <span class="required">*</span></label>
+                                <input type="date" id="startDate" name="startDate" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="endDate">Internship End Date <span class="required">*</span></label>
+                                <input type="date" id="endDate" name="endDate" required>
+                            </div>
+                        </div>
+
+                        <div class="form-navigation">
+                            <button type="button" class="btn btn-secondary btn-prev">Previous</button>
+                            <button type="button" class="btn btn-primary btn-next">Next Step</button>
+                        </div>
+                    </div>
+
+                    <!-- Step 3: Review & Submit -->
+                    <div class="form-step" data-step="3">
+                        <h4 class="step-title">Review & Submit NOC Request</h4>
+
+                        <div class="review-section">
+                            <h5>Student Information</h5>
+                            <div class="review-grid">
+                                <div class="review-item">
+                                    <span class="review-label">Student Name:</span>
+                                    <span class="review-value" id="reviewStudentName">-</span>
+                                </div>
+                                <div class="review-item">
+                                    <span class="review-label">Student ID:</span>
+                                    <span class="review-value" id="reviewStudentId">-</span>
+                                </div>
+                                <div class="review-item">
+                                    <span class="review-label">Semester:</span>
+                                    <span class="review-value" id="reviewSemester">-</span>
+                                </div>
+                                <div class="review-item">
+                                    <span class="review-label">Email:</span>
+                                    <span class="review-value" id="reviewEmail">-</span>
+                                </div>
+                                <div class="review-item">
+                                    <span class="review-label">Mobile:</span>
+                                    <span class="review-value" id="reviewMobile">-</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="review-section">
+                            <h5>Company Information</h5>
+                            <div class="review-grid">
+                                <div class="review-item">
+                                    <span class="review-label">Company:</span>
+                                    <span class="review-value" id="reviewCompany">-</span>
+                                </div>
+                                <div class="review-item">
+                                    <span class="review-label">Company Details:</span>
+                                    <span class="review-value" id="reviewLocation">-</span>
+                                </div>
+                                <div class="review-item">
+                                    <span class="review-label">Start Date:</span>
+                                    <span class="review-value" id="reviewStartDate">-</span>
+                                </div>
+                                <div class="review-item">
+                                    <span class="review-label">End Date:</span>
+                                    <span class="review-value" id="reviewEndDate">-</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="pendingCompanyNotice" style="display: none;" class="info-box warning">
+                            <p><strong>⚠️ Company Pending Approval:</strong> This company is not yet approved by the
+                                administration. Your NOC request will be saved, but the certificate can only be
+                                generated after company approval.</p>
+                        </div>
+
+                        <div class="form-group checkbox-group">
+                            <input type="checkbox" id="declaration" name="declaration" required>
+                            <label for="declaration">
+                                I hereby declare that all the information provided above is true and correct to the best
+                                of my knowledge.
+                            </label>
+                        </div>
+
+                        <div class="form-navigation">
+                            <button type="button" class="btn btn-secondary btn-prev">Previous</button>
+                            <button type="submit" class="btn btn-success" id="submitBtn">Submit NOC Request</button>
+                        </div>
+
+                        <!-- Success Message (Hidden initially) -->
+                        <div id="successMessage" style="display: none;" class="success-box">
+                            <h4>✅ NOC Request Submitted Successfully!</h4>
+                            <p>Your NOC request ID: <strong id="generatedNOCId">-</strong></p>
+                            <p id="pdfDownloadMessage">Your NOC certificate has been generated and downloaded.</p>
+                            <button type="button" class="btn btn-primary"
+                                onclick="window.location.href='student-dashboard.html'">Back to Dashboard</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Include jsPDF library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+    <script src="js/config.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/api-service.js"></script>
+    <script src="js/database.js"></script>
+    <script src="js/pdf-generator.js"></script>
+    <script src="js/noc-request.js"></script>
+</body>
+
+</html>

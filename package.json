@@ -1,0 +1,32 @@
+{
+  "name": "college-portal",
+  "version": "2.0.0",
+  "description": "CHARUSAT eNOC Portal - College Internship NOC Management System",
+  "main": "frontend-server.js",
+  "scripts": {
+    "start": "concurrently --kill-others --names \"BACKEND,FRONTEND\" -c \"bgBlue.bold,bgMagenta.bold\" \"npm run start:backend\" \"npm run start:frontend\"",
+    "start:backend": "cd backend && npm run dev",
+    "start:frontend": "node -e \"setTimeout(() => {}, 2000)\" && node frontend-server.js",
+    "dev": "concurrently --kill-others --names \"BACKEND,FRONTEND\" -c \"bgBlue.bold,bgMagenta.bold\" \"npm run dev:backend\" \"npm run start:frontend\"",
+    "dev:backend": "cd backend && npm run dev",
+    "backend": "cd backend && npm run dev",
+    "frontend": "node frontend-server.js",
+    "install-all": "npm install && cd backend && npm install",
+    "verify": "node scripts/verify-config.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "noc",
+    "college",
+    "portal",
+    "charusat",
+    "google-oauth",
+    "internship"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "concurrently": "^8.2.2",
+    "nodemon": "^3.1.11"
+  }
+}

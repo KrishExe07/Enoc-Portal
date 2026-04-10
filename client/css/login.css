@@ -1,0 +1,427 @@
+/* ==============================================
+   LOGIN PAGE STYLES
+   ============================================== */
+
+.login-section {
+    padding: var(--spacing-2xl) 0;
+    min-height: 60vh;
+}
+
+.login-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--spacing-2xl);
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.login-box {
+    background: var(--white);
+    border-radius: var(--radius-xl);
+    padding: var(--spacing-2xl);
+    box-shadow: var(--shadow-xl);
+}
+
+.login-header {
+    text-align: center;
+    margin-bottom: var(--spacing-xl);
+}
+
+.login-header h3 {
+    font-size: var(--font-size-2xl);
+    color: var(--primary-color);
+    margin-bottom: var(--spacing-sm);
+    font-weight: 700;
+}
+
+.login-header p {
+    color: var(--gray-600);
+    font-size: var(--font-size-sm);
+}
+
+/* Form Styles */
+.login-form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-lg);
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+}
+
+.form-group label {
+    font-weight: 600;
+    color: var(--gray-700);
+    font-size: var(--font-size-sm);
+}
+
+.form-group input,
+.form-group select {
+    padding: 0.75rem;
+    border: 2px solid var(--gray-300);
+    border-radius: var(--radius-md);
+    font-size: var(--font-size-base);
+    font-family: inherit;
+    transition: border-color var(--transition-fast);
+}
+
+.form-group input:focus,
+.form-group select:focus {
+    outline: none;
+    border-color: var(--primary-color);
+}
+
+.checkbox-group {
+    flex-direction: row !important;
+    align-items: center !important;
+    gap: 0.75rem !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+.checkbox-group input[type="checkbox"] {
+    width: 18px !important;
+    height: 18px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    cursor: pointer !important;
+    flex-shrink: 0 !important;
+    accent-color: var(--primary-color) !important;
+    vertical-align: middle !important;
+    position: relative !important;
+    top: 0 !important;
+}
+
+.checkbox-group label {
+    font-weight: 400 !important;
+    cursor: pointer !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    line-height: 1.5 !important;
+    user-select: none !important;
+    display: inline-block !important;
+    vertical-align: middle !important;
+}
+
+/* Ensure clickable area for better UX */
+.checkbox-group:hover {
+    opacity: 0.8;
+}
+
+.form-links {
+    display: flex;
+    justify-content: space-between;
+    margin-top: var(--spacing-md);
+}
+
+.form-links a {
+    color: var(--primary-color);
+    text-decoration: none;
+    font-size: var(--font-size-sm);
+    transition: color var(--transition-fast);
+}
+
+.form-links a:hover {
+    color: var(--secondary-color);
+    text-decoration: underline;
+}
+
+/* Form Toggle */
+.form-toggle {
+    text-align: center;
+    margin-top: var(--spacing-lg);
+    padding-top: var(--spacing-lg);
+    border-top: 1px solid var(--gray-300);
+}
+
+.form-toggle p {
+    color: var(--gray-600);
+    font-size: var(--font-size-sm);
+}
+
+.form-toggle a {
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: 600;
+    transition: color var(--transition-fast);
+}
+
+.form-toggle a:hover {
+    color: var(--secondary-color);
+    text-decoration: underline;
+}
+
+/* Demo Credentials */
+.demo-credentials {
+    margin-top: var(--spacing-xl);
+    padding: var(--spacing-lg);
+    background: var(--gray-100);
+    border-radius: var(--radius-md);
+    border-left: 4px solid var(--info-color);
+}
+
+.demo-title {
+    font-weight: 700;
+    color: var(--info-color);
+    margin-bottom: var(--spacing-sm);
+}
+
+.demo-credentials ul {
+    list-style: none;
+}
+
+.demo-credentials li {
+    padding: var(--spacing-sm) 0;
+    font-size: var(--font-size-sm);
+    color: var(--gray-700);
+}
+
+.demo-credentials strong {
+    color: var(--primary-color);
+}
+
+/* Quick Access Cards */
+.quick-access {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-lg);
+}
+
+.quick-access h4 {
+    font-size: var(--font-size-xl);
+    color: var(--primary-color);
+    font-weight: 700;
+}
+
+.access-cards {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+}
+
+.access-card {
+    background: var(--white);
+    padding: var(--spacing-lg);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+    transition: transform var(--transition-base), box-shadow var(--transition-base);
+    text-align: center;
+}
+
+.access-card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-lg);
+}
+
+.card-icon {
+    font-size: 2.5rem;
+    margin-bottom: var(--spacing-md);
+}
+
+.access-card h5 {
+    color: var(--primary-color);
+    font-size: var(--font-size-lg);
+    margin-bottom: var(--spacing-sm);
+}
+
+.access-card p {
+    color: var(--gray-600);
+    font-size: var(--font-size-sm);
+}
+
+/* Required Field Indicator */
+.required {
+    color: var(--danger-color);
+    font-weight: bold;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .login-section {
+        padding: var(--spacing-2xl) 0;
+        min-height: 60vh;
+    }
+
+    .login-container {
+        max-width: 420px;
+        padding: 0 var(--spacing-md);
+    }
+}
+
+
+
+/* Override to ensure the login card is always centered and single-column */
+.login-section {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    min-height: calc(100vh - 140px) !important;
+    /* leaves space for header/footer */
+    padding: var(--spacing-2xl) 0 !important;
+    position: relative !important;
+    background-image: url('../images/campus-gate.jpg') !important;
+    background-size: cover !important;
+    background-position: center !important;
+    background-repeat: no-repeat !important;
+    background-attachment: fixed !important;
+}
+
+/* Soft white overlay for readability */
+.login-section::before {
+    content: '' !important;
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    background: rgba(255, 255, 255, 0.7) !important;
+    z-index: 1 !important;
+}
+
+.login-container {
+    max-width: 540px !important;
+    width: 100% !important;
+    margin: 0 auto !important;
+    display: block !important;
+    position: relative !important;
+    z-index: 2 !important;
+}
+
+.login-box {
+    width: 100% !important;
+    box-sizing: border-box !important;
+}
+
+/* Hide quick access if any remnants exist */
+.quick-access,
+.access-cards,
+.access-card {
+    display: none !important;
+}
+
+/* Make sure form is balanced vertically */
+.login-form {
+    gap: var(--spacing-lg) !important;
+}
+
+/* Ensure buttons & inputs span full width */
+.form-group input,
+.form-group select,
+.btn-block {
+    width: 100% !important;
+}
+
+/* ── Login Tab Switcher ─────────────────────────────────────────────────── */
+.login-tabs {
+    display: flex;
+    gap: 0;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    border: 2px solid var(--primary-color);
+    margin-bottom: var(--spacing-xl);
+}
+
+.login-tab {
+    flex: 1;
+    padding: 0.65rem 1rem;
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    border: none;
+    background: transparent;
+    color: var(--primary-color);
+    transition: background var(--transition-fast), color var(--transition-fast);
+}
+
+.login-tab.active {
+    background: var(--primary-color);
+    color: #fff;
+}
+
+.login-tab:not(.active):hover {
+    background: rgba(14, 102, 179, 0.08);
+}
+
+/* ── Login Panels ───────────────────────────────────────────────────────── */
+.login-panel {
+    animation: fadeInPanel 0.25s ease;
+}
+
+@keyframes fadeInPanel {
+    from {
+        opacity: 0;
+        transform: translateY(6px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ── Staff Direct Login Form ────────────────────────────────────────────── */
+.staff-login-form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+    margin-top: var(--spacing-md);
+}
+
+.staff-login-form .form-group label {
+    font-weight: 600;
+    color: var(--gray-700);
+    font-size: var(--font-size-sm);
+    margin-bottom: 4px;
+    display: block;
+}
+
+.staff-login-form .form-control {
+    width: 100%;
+    padding: 0.75rem;
+    border: 2px solid var(--gray-300);
+    border-radius: var(--radius-md);
+    font-size: var(--font-size-base);
+    font-family: inherit;
+    transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+    box-sizing: border-box;
+    background: #fff;
+}
+
+.staff-login-form .form-control:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(14, 102, 179, 0.12);
+}
+
+/* Password toggle button */
+.pwd-toggle {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1.1rem;
+    padding: 2px 4px;
+    line-height: 1;
+    opacity: 0.6;
+    transition: opacity var(--transition-fast);
+}
+
+.pwd-toggle:hover {
+    opacity: 1;
+}
+
+/* Staff login hint */
+.staff-login-hint {
+    text-align: center;
+    font-size: 0.78rem;
+    color: var(--gray-500);
+    margin-top: var(--spacing-sm);
+    font-style: italic;
+}

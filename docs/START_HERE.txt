@@ -1,0 +1,105 @@
+================================================================================
+                    🚀 HOW TO START YOUR PORTAL
+                    (These changes are PERMANENT)
+================================================================================
+
+EVERY TIME YOU WANT TO USE THE PORTAL:
+--------------------------------------
+
+  Just double-click this file:
+  
+    ➤  start-portal.bat
+  
+  That's it! It will:
+    ✓ Start the backend on port 5000
+    ✓ Start the frontend on port 8080
+    ✓ Open your browser automatically
+
+
+IF AUTHENTICATION DOESN'T WORK:
+-------------------------------
+
+  1. Make sure backend is running:
+     Double-click: restart-backend.bat
+  
+  2. Refresh your browser page (Ctrl + F5)
+  
+  3. Try logging in again with:
+     - Student: 24it068@charusat.edu.in
+     - Faculty: faculty@charusat.ac.in
+
+
+VALID EMAILS (These will work):
+-------------------------------
+
+  Students:
+    ✅ 24it068@charusat.edu.in
+    ✅ yourname@it.charusat.edu.in
+    ✅ student@cse.charusat.edu.in
+  
+  Faculty/Admin:
+    ✅ faculty@charusat.ac.in
+    ✅ yourname@ce.charusat.ac.in
+    ✅ admin@it.charusat.ac.in
+
+
+QUICK TROUBLESHOOTING:
+---------------------
+
+  Problem: "Cannot connect to backend"
+  Solution: Double-click restart-backend.bat
+
+  Problem: "Invalid email domain"
+  Solution: Use @charusat.edu.in (students) or @charusat.ac.in (faculty)
+
+  Problem: Port 5000 already in use
+  Solution: Run restart-backend.bat (it kills old processes)
+
+
+USEFUL SCRIPTS IN THIS FOLDER:
+------------------------------
+
+  start-portal.bat      → Start everything (use this most)
+  restart-backend.bat   → Restart backend only
+  verify-config.bat     → Check if everything is configured
+  CHANGES_SUMMARY.txt   → See what was fixed
+
+
+YOUR FIXES ARE PERMANENT! ✅
+---------------------------
+
+  ✓ All code changes are saved
+  ✓ Configuration is correct
+  ✓ Domain validation works for CHARUSAT emails
+  ✓ Backend runs on port 5000
+  ✓ Frontend connects to correct API URL
+  
+  You don't need to fix this again!
+  Just use start-portal.bat every time.
+
+
+BACKEND DETAILS (for reference):
+--------------------------------
+
+  Backend Port: 5000
+  Backend URL: http://localhost:5000/api
+  Health Check: http://localhost:5000/api/health
+  
+  Config File: backend\.env
+  Auth Code: backend\routes\auth.js
+
+
+FRONTEND DETAILS (for reference):
+---------------------------------
+
+  Frontend Port: 8080
+  Frontend URL: http://localhost:8080
+  
+  Config File: js\config.js
+  Auth Code: js\google-auth.js
+
+
+================================================================================
+                    Everything is set up and ready to go!
+                    Just run start-portal.bat whenever you need it.
+================================================================================

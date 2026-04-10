@@ -1,0 +1,1797 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CHARUSAT eNOC Portal — UI Workflow System Map</title>
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <!-- Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.0/css/all.min.css" />
+
+  <style>
+    /* ═══════════════════════════════════════════════
+       RESET & BASE
+    ═══════════════════════════════════════════════ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      /* Role colors */
+      --student:       #6366f1;
+      --student-glow:  rgba(99,102,241,0.35);
+      --student-soft:  rgba(99,102,241,0.12);
+      --faculty:       #f59e0b;
+      --faculty-glow:  rgba(245,158,11,0.35);
+      --faculty-soft:  rgba(245,158,11,0.10);
+      --admin:         #ec4899;
+      --admin-glow:    rgba(236,72,153,0.35);
+      --admin-soft:    rgba(236,72,153,0.10);
+
+      /* Auth / Shared */
+      --auth:          #0ea5e9;
+      --auth-glow:     rgba(14,165,233,0.35);
+      --service:       #8b5cf6;
+      --service-glow:  rgba(139,92,246,0.35);
+      --success:       #10b981;
+      --danger:        #ef4444;
+
+      /* Surfaces */
+      --bg:            #080b14;
+      --bg2:           #0d1117;
+      --surface:       rgba(255,255,255,0.04);
+      --surface-hover: rgba(255,255,255,0.08);
+      --border:        rgba(255,255,255,0.08);
+      --border-bright: rgba(255,255,255,0.15);
+
+      /* Text */
+      --text-primary:  #f0f4ff;
+      --text-secondary:#94a3b8;
+      --text-muted:    #4b5563;
+
+      /* Misc */
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 18px;
+      --radius-xl: 24px;
+      --transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Space Grotesk', 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text-primary);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ═══════════════════════════════════════════════
+       ANIMATED BACKGROUND
+    ═══════════════════════════════════════════════ */
+    .bg-mesh {
+      position: fixed; inset: 0; z-index: 0; pointer-events: none;
+      background:
+        radial-gradient(ellipse 80% 50% at 20% 0%, rgba(99,102,241,0.08) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 40% at 80% 20%, rgba(245,158,11,0.06) 0%, transparent 50%),
+        radial-gradient(ellipse 70% 60% at 50% 100%, rgba(139,92,246,0.07) 0%, transparent 60%);
+    }
+    .bg-grid {
+      position: fixed; inset: 0; z-index: 0; pointer-events: none;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+      background-size: 48px 48px;
+      mask-image: radial-gradient(ellipse 80% 70% at 50% 50%, black 30%, transparent 100%);
+    }
+
+    /* ═══════════════════════════════════════════════
+       LAYOUT WRAPPER
+    ═══════════════════════════════════════════════ */
+    .page-wrapper {
+      position: relative; z-index: 1;
+      max-width: 1500px; margin: 0 auto;
+      padding: 0 24px 80px;
+    }
+
+    /* ═══════════════════════════════════════════════
+       HEADER
+    ═══════════════════════════════════════════════ */
+    .site-header {
+      padding: 40px 0 32px;
+      text-align: center;
+      opacity: 0; animation: fadeSlideUp 0.7s 0.1s ease forwards;
+    }
+    .header-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: rgba(99,102,241,0.15);
+      border: 1px solid rgba(99,102,241,0.3);
+      border-radius: 999px;
+      padding: 6px 16px;
+      font-size: 0.72rem; font-weight: 600; letter-spacing: 0.12em;
+      text-transform: uppercase; color: #a5b4fc;
+      margin-bottom: 18px;
+    }
+    .header-badge i { font-size: 0.7rem; animation: spin 4s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    h1.site-title {
+      font-size: clamp(2rem, 4vw, 3.2rem);
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      line-height: 1.1;
+      background: linear-gradient(135deg, #f0f4ff 0%, #a5b4fc 40%, #f59e0b 80%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 12px;
+    }
+    .site-subtitle {
+      color: var(--text-secondary);
+      font-size: 1rem; font-weight: 400;
+      max-width: 560px; margin: 0 auto;
+      line-height: 1.6;
+    }
+
+    /* ═══════════════════════════════════════════════
+       KPI STATS BAR
+    ═══════════════════════════════════════════════ */
+    .stats-bar {
+      display: flex; flex-wrap: wrap; justify-content: center; gap: 12px;
+      margin: 32px 0 48px;
+      opacity: 0; animation: fadeSlideUp 0.7s 0.25s ease forwards;
+    }
+    .stat-pill {
+      display: inline-flex; align-items: center; gap: 9px;
+      padding: 10px 20px;
+      border-radius: 999px;
+      font-size: 0.82rem; font-weight: 600;
+      border: 1px solid; position: relative; overflow: hidden;
+      cursor: default;
+      transition: var(--transition);
+    }
+    .stat-pill::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: linear-gradient(135deg, transparent 0%, rgba(255,255,255,0.05) 100%);
+      opacity: 0; transition: var(--transition);
+    }
+    .stat-pill:hover::before { opacity: 1; }
+    .stat-pill:hover { transform: translateY(-2px); }
+    .stat-pill .stat-num {
+      font-size: 1.1rem; font-weight: 700;
+    }
+    .stat-pill i { font-size: 0.85rem; }
+
+    .sp-screens {
+      background: rgba(99,102,241,0.12); border-color: rgba(99,102,241,0.3);
+      color: #a5b4fc;
+      box-shadow: 0 0 20px rgba(99,102,241,0.15);
+    }
+    .sp-routes {
+      background: rgba(14,165,233,0.12); border-color: rgba(14,165,233,0.3);
+      color: #7dd3fc;
+      box-shadow: 0 0 20px rgba(14,165,233,0.12);
+    }
+    .sp-roles {
+      background: rgba(245,158,11,0.12); border-color: rgba(245,158,11,0.3);
+      color: #fcd34d;
+      box-shadow: 0 0 20px rgba(245,158,11,0.12);
+    }
+    .sp-auth {
+      background: rgba(16,185,129,0.12); border-color: rgba(16,185,129,0.3);
+      color: #6ee7b7;
+      box-shadow: 0 0 20px rgba(16,185,129,0.10);
+    }
+    .sp-models {
+      background: rgba(139,92,246,0.12); border-color: rgba(139,92,246,0.3);
+      color: #c4b5fd;
+      box-shadow: 0 0 20px rgba(139,92,246,0.12);
+    }
+
+    /* ═══════════════════════════════════════════════
+       ENTRY + AUTH SECTION
+    ═══════════════════════════════════════════════ */
+    .section-label {
+      font-size: 0.7rem; font-weight: 700; letter-spacing: 0.14em;
+      text-transform: uppercase; color: var(--text-muted);
+      margin-bottom: 16px;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .section-label::after {
+      content: ''; flex: 1;
+      height: 1px; background: var(--border);
+    }
+
+    /* Central entry zone */
+    .entry-zone {
+      display: flex; flex-direction: column; align-items: center;
+      gap: 0; margin-bottom: 0;
+      opacity: 0; animation: fadeSlideUp 0.7s 0.35s ease forwards;
+    }
+
+    /* ═══════════════════════════════════════════════
+       FLOW CARD (Node)
+    ═══════════════════════════════════════════════ */
+    .flow-node {
+      position: relative;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 14px 20px;
+      cursor: pointer;
+      transition: var(--transition);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      min-width: 200px;
+      text-align: center;
+      user-select: none;
+    }
+    .flow-node:hover {
+      background: var(--surface-hover);
+      border-color: var(--border-bright);
+      transform: translateY(-3px);
+    }
+    .flow-node.active {
+      border-color: currentColor;
+    }
+
+    /* Color variants */
+    .node-entry   { --nc: var(--auth); color: var(--auth); border-color: rgba(14,165,233,0.25); box-shadow: 0 0 30px rgba(14,165,233,0.1); }
+    .node-entry:hover { box-shadow: 0 0 40px var(--auth-glow); border-color: var(--auth); }
+    .node-auth    { --nc: var(--auth); color: var(--auth); border-color: rgba(14,165,233,0.22); }
+    .node-auth:hover { box-shadow: 0 0 35px var(--auth-glow); border-color: var(--auth); }
+    .node-student { --nc: var(--student); color: var(--student); border-color: rgba(99,102,241,0.22); }
+    .node-student:hover { box-shadow: 0 0 35px var(--student-glow); border-color: var(--student); }
+    .node-faculty { --nc: var(--faculty); color: var(--faculty); border-color: rgba(245,158,11,0.22); }
+    .node-faculty:hover { box-shadow: 0 0 35px var(--faculty-glow); border-color: var(--faculty); }
+    .node-admin   { --nc: var(--admin); color: var(--admin); border-color: rgba(236,72,153,0.22); }
+    .node-admin:hover { box-shadow: 0 0 35px var(--admin-glow); border-color: var(--admin); }
+    .node-service { --nc: var(--service); color: var(--service); border-color: rgba(139,92,246,0.22); }
+    .node-service:hover { box-shadow: 0 0 35px var(--service-glow); border-color: var(--service); }
+    .node-success { --nc: var(--success); color: var(--success); border-color: rgba(16,185,129,0.22); }
+    .node-success:hover { box-shadow: 0 0 35px rgba(16,185,129,0.3); border-color: var(--success); }
+    .node-danger  { --nc: var(--danger); color: var(--danger); border-color: rgba(239,68,68,0.22); }
+    .node-danger:hover { box-shadow: 0 0 35px rgba(239,68,68,0.3); border-color: var(--danger); }
+
+    .node-icon {
+      font-size: 1.3rem; margin-bottom: 7px;
+      display: block;
+    }
+    .node-title {
+      font-size: 0.82rem; font-weight: 600;
+      color: var(--text-primary);
+      line-height: 1.3;
+    }
+    .node-sub {
+      font-size: 0.68rem; font-weight: 500;
+      color: var(--text-muted);
+      font-family: 'JetBrains Mono', monospace;
+      margin-top: 4px;
+    }
+    .node-badge {
+      display: inline-block;
+      font-size: 0.6rem; font-weight: 700;
+      letter-spacing: 0.08em; text-transform: uppercase;
+      padding: 2px 8px; border-radius: 999px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.1);
+      color: var(--text-secondary);
+      margin-top: 6px;
+    }
+
+    /* ═══════════════════════════════════════════════
+       CONNECTOR ARROWS
+    ═══════════════════════════════════════════════ */
+    .connector {
+      display: flex; flex-direction: column; align-items: center;
+      gap: 0; pointer-events: none;
+    }
+    .conn-line {
+      width: 2px; background: linear-gradient(to bottom, var(--border-bright), var(--border));
+      position: relative; overflow: hidden;
+    }
+    .conn-line::after {
+      content: '';
+      position: absolute; top: -100%; left: 0; right: 0;
+      height: 40%;
+      background: linear-gradient(to bottom, transparent, rgba(255,255,255,0.5), transparent);
+      animation: flowDown 1.8s linear infinite;
+    }
+    @keyframes flowDown {
+      from { top: -40%; }
+      to   { top: 120%; }
+    }
+    .conn-arrow {
+      width: 0; height: 0;
+      border-left: 5px solid transparent;
+      border-right: 5px solid transparent;
+      border-top: 7px solid var(--border-bright);
+    }
+    .conn-label {
+      font-size: 0.62rem; font-weight: 600;
+      letter-spacing: 0.08em; text-transform: uppercase;
+      color: var(--text-muted);
+      background: var(--bg2); padding: 1px 8px;
+      border-radius: 999px; border: 1px solid var(--border);
+      margin: 3px 0;
+      white-space: nowrap;
+    }
+
+    /* Colored connectors */
+    .conn-student .conn-line { background: linear-gradient(to bottom, var(--student), rgba(99,102,241,0.2)); }
+    .conn-student .conn-line::after { background: linear-gradient(to bottom, transparent, rgba(99,102,241,0.9), transparent); }
+    .conn-student .conn-arrow { border-top-color: var(--student); }
+
+    .conn-faculty .conn-line { background: linear-gradient(to bottom, var(--faculty), rgba(245,158,11,0.2)); }
+    .conn-faculty .conn-line::after { background: linear-gradient(to bottom, transparent, rgba(245,158,11,0.9), transparent); }
+    .conn-faculty .conn-arrow { border-top-color: var(--faculty); }
+
+    .conn-admin .conn-line { background: linear-gradient(to bottom, var(--admin), rgba(236,72,153,0.2)); }
+    .conn-admin .conn-line::after { background: linear-gradient(to bottom, transparent, rgba(236,72,153,0.9), transparent); }
+    .conn-admin .conn-arrow { border-top-color: var(--admin); }
+
+    .conn-auth .conn-line { background: linear-gradient(to bottom, var(--auth), rgba(14,165,233,0.2)); }
+    .conn-auth .conn-line::after { background: linear-gradient(to bottom, transparent, rgba(14,165,233,0.9), transparent); }
+    .conn-auth .conn-arrow { border-top-color: var(--auth); }
+
+    /* ═══════════════════════════════════════════════
+       AUTH SPLIT
+    ═══════════════════════════════════════════════ */
+    .auth-split {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      width: 100%; max-width: 560px;
+      opacity: 0; animation: fadeSlideUp 0.7s 0.45s ease forwards;
+    }
+
+    /* ═══════════════════════════════════════════════
+       SWIMLANES SECTION
+    ═══════════════════════════════════════════════ */
+    .swimlane-header {
+      display: grid; grid-template-columns: 1fr 1fr 1fr;
+      gap: 20px; margin-bottom: 0;
+      opacity: 0; animation: fadeSlideUp 0.7s 0.6s ease forwards;
+    }
+    .lane-label {
+      text-align: center; padding: 14px 20px;
+      border-radius: var(--radius-md) var(--radius-md) 0 0;
+      font-size: 0.85rem; font-weight: 700;
+      letter-spacing: 0.04em;
+      border: 1px solid; border-bottom: none;
+      display: flex; align-items: center; justify-content: center; gap: 10px;
+    }
+    .lane-label i { font-size: 1rem; }
+
+    .lane-student { background: var(--student-soft); border-color: rgba(99,102,241,0.3); color: #a5b4fc; }
+    .lane-faculty { background: var(--faculty-soft); border-color: rgba(245,158,11,0.3); color: #fcd34d; }
+    .lane-admin   { background: var(--admin-soft); border-color: rgba(236,72,153,0.3); color: #f9a8d4; }
+
+    .swimlanes {
+      display: grid; grid-template-columns: 1fr 1fr 1fr;
+      gap: 20px;
+      opacity: 0; animation: fadeSlideUp 0.7s 0.7s ease forwards;
+    }
+
+    .lane-body {
+      padding: 24px 16px;
+      border: 1px solid; border-top: none;
+      border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+      display: flex; flex-direction: column; align-items: center; gap: 0;
+      position: relative;
+    }
+    .lane-body-student { background: rgba(99,102,241,0.04); border-color: rgba(99,102,241,0.2); }
+    .lane-body-faculty { background: rgba(245,158,11,0.04); border-color: rgba(245,158,11,0.2); }
+    .lane-body-admin   { background: rgba(236,72,153,0.04); border-color: rgba(236,72,153,0.2); }
+
+    .lane-node {
+      width: 100%;
+    }
+
+    /* ═══════════════════════════════════════════════
+       SERVICES ROW
+    ═══════════════════════════════════════════════ */
+    .services-section {
+      margin-top: 48px;
+      opacity: 0; animation: fadeSlideUp 0.7s 0.9s ease forwards;
+    }
+    .services-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+
+    /* ═══════════════════════════════════════════════
+       POPOVER / TOOLTIP
+    ═══════════════════════════════════════════════ */
+    .popover-overlay {
+      position: fixed; inset: 0; z-index: 100;
+      background: rgba(0,0,0,0.6); backdrop-filter: blur(4px);
+      display: none; align-items: center; justify-content: center;
+      padding: 20px;
+    }
+    .popover-overlay.show { display: flex; animation: fadeIn 0.2s ease; }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+    .popover-card {
+      background: #12181f;
+      border: 1px solid var(--border-bright);
+      border-radius: var(--radius-xl);
+      padding: 28px;
+      max-width: 500px; width: 100%;
+      position: relative;
+      box-shadow: 0 32px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.03);
+      animation: popIn 0.28s cubic-bezier(0.34,1.56,0.64,1);
+    }
+    @keyframes popIn {
+      from { transform: scale(0.88); opacity: 0; }
+      to   { transform: scale(1); opacity: 1; }
+    }
+
+    .popover-close {
+      position: absolute; top: 16px; right: 16px;
+      background: rgba(255,255,255,0.06); border: none;
+      width: 30px; height: 30px; border-radius: 50%;
+      color: var(--text-secondary); cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.8rem; transition: var(--transition);
+    }
+    .popover-close:hover { background: rgba(255,255,255,0.12); color: white; }
+
+    .popover-icon { font-size: 2rem; margin-bottom: 12px; }
+    .popover-title {
+      font-size: 1.15rem; font-weight: 700;
+      color: var(--text-primary); margin-bottom: 4px;
+    }
+    .popover-file {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem; color: var(--text-muted);
+      margin-bottom: 16px;
+    }
+    .popover-divider { height: 1px; background: var(--border); margin: 14px 0; }
+    .popover-section-title {
+      font-size: 0.65rem; font-weight: 700;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--text-muted); margin-bottom: 8px;
+    }
+    .popover-tags {
+      display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px;
+    }
+    .ptag {
+      font-size: 0.7rem; font-weight: 500;
+      padding: 3px 10px; border-radius: 999px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.1);
+      color: var(--text-secondary);
+    }
+    .ptag.accent { background: rgba(99,102,241,0.15); border-color: rgba(99,102,241,0.35); color: #a5b4fc; }
+    .ptag.amber  { background: rgba(245,158,11,0.12); border-color: rgba(245,158,11,0.3); color: #fcd34d; }
+    .ptag.pink   { background: rgba(236,72,153,0.12); border-color: rgba(236,72,153,0.3); color: #f9a8d4; }
+    .ptag.blue   { background: rgba(14,165,233,0.12); border-color: rgba(14,165,233,0.3); color: #7dd3fc; }
+    .ptag.green  { background: rgba(16,185,129,0.12); border-color: rgba(16,185,129,0.3); color: #6ee7b7; }
+    .ptag.red    { background: rgba(239,68,68,0.12); border-color: rgba(239,68,68,0.3); color: #fca5a5; }
+    .ptag.purple { background: rgba(139,92,246,0.12); border-color: rgba(139,92,246,0.3); color: #c4b5fd; }
+
+    .api-endpoint {
+      background: rgba(0,0,0,0.4);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 8px 12px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      color: var(--text-secondary);
+      margin-bottom: 6px;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .method-badge {
+      font-size: 0.6rem; font-weight: 700; padding: 2px 7px; border-radius: 4px;
+      letter-spacing: 0.05em;
+    }
+    .method-get    { background: rgba(16,185,129,0.2); color: #6ee7b7; }
+    .method-post   { background: rgba(14,165,233,0.2); color: #7dd3fc; }
+    .method-patch  { background: rgba(245,158,11,0.2); color: #fcd34d; }
+    .method-put    { background: rgba(139,92,246,0.2); color: #c4b5fd; }
+    .method-delete { background: rgba(239,68,68,0.2); color: #fca5a5; }
+
+    /* ═══════════════════════════════════════════════
+       SVG CONNECTOR CANVAS (animated lines)
+    ═══════════════════════════════════════════════ */
+    #connector-canvas {
+      position: absolute; inset: 0; pointer-events: none;
+      overflow: visible; z-index: 0;
+    }
+
+    .diagram-main {
+      position: relative;
+    }
+
+    /* ═══════════════════════════════════════════════
+       LEGEND
+    ═══════════════════════════════════════════════ */
+    .legend {
+      display: flex; flex-wrap: wrap; gap: 12px;
+      justify-content: center;
+      padding: 20px 24px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      margin-top: 48px;
+      opacity: 0; animation: fadeSlideUp 0.7s 1.0s ease forwards;
+    }
+    .legend-item {
+      display: flex; align-items: center; gap: 7px;
+      font-size: 0.74rem; font-weight: 500; color: var(--text-secondary);
+    }
+    .legend-dot {
+      width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0;
+    }
+    .legend-line {
+      width: 22px; height: 2px; flex-shrink: 0;
+      background: repeating-linear-gradient(90deg, currentColor 0, currentColor 4px, transparent 4px, transparent 8px);
+    }
+
+    /* ═══════════════════════════════════════════════
+       ROLE ROUTING BRIDGE
+    ═══════════════════════════════════════════════ */
+    .role-bridge {
+      display: flex; flex-direction: column; align-items: center;
+      opacity: 0; animation: fadeSlideUp 0.7s 0.55s ease forwards;
+      margin-bottom: 0;
+    }
+    .bridge-row {
+      display: flex; align-items: flex-start; gap: 0;
+      width: 100%;
+    }
+    .bridge-lanes {
+      display: grid; grid-template-columns: 1fr 1fr 1fr;
+      gap: 20px; width: 100%;
+    }
+    .bridge-cell {
+      display: flex; flex-direction: column; align-items: center;
+    }
+
+    /* ═══════════════════════════════════════════════
+       FULL DIAGRAM LAYOUT
+    ═══════════════════════════════════════════════ */
+    .diagram-outer {
+      display: flex; flex-direction: column; align-items: center; gap: 0;
+    }
+
+    /* Top entry node */
+    .top-entry { min-width: 260px; }
+
+    /* ═══════════════════════════════════════════════
+       DECISION DIAMOND
+    ═══════════════════════════════════════════════ */
+    .diamond-wrap {
+      display: flex; flex-direction: column; align-items: center;
+      opacity: 0; animation: fadeSlideUp 0.7s 0.4s ease forwards;
+    }
+    .diamond {
+      width: 90px; height: 90px;
+      background: rgba(14,165,233,0.12);
+      border: 1.5px solid rgba(14,165,233,0.4);
+      transform: rotate(45deg);
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer;
+      transition: var(--transition);
+      box-shadow: 0 0 25px rgba(14,165,233,0.15);
+    }
+    .diamond:hover {
+      box-shadow: 0 0 40px rgba(14,165,233,0.35);
+      border-color: var(--auth);
+      transform: rotate(45deg) scale(1.08);
+    }
+    .diamond-inner {
+      transform: rotate(-45deg);
+      text-align: center;
+      color: var(--auth);
+    }
+    .diamond-inner i { font-size: 1.1rem; display: block; margin-bottom: 3px; }
+    .diamond-inner span { font-size: 0.6rem; font-weight: 700; letter-spacing: 0.05em; }
+
+    /* ═══════════════════════════════════════════════
+       HORIZONTAL SPLIT CONNECTORS
+    ═══════════════════════════════════════════════ */
+    .h-connector-group {
+      display: flex; width: 100%; max-width: 980px; align-items: flex-start;
+      opacity: 0; animation: fadeSlideUp 0.7s 0.62s ease forwards;
+    }
+    .h-conn {
+      flex: 1; display: flex; flex-direction: column; align-items: center;
+    }
+
+    /* ═══════════════════════════════════════════════
+       STATUS BADGES INLINE
+    ═══════════════════════════════════════════════ */
+    .status-row {
+      display: flex; gap: 6px; justify-content: center; flex-wrap: wrap;
+      margin-top: 6px;
+    }
+    .sbadge {
+      font-size: 0.58rem; font-weight: 700; padding: 2px 8px;
+      border-radius: 999px; letter-spacing: 0.06em; text-transform: uppercase;
+    }
+    .sbadge-pending { background: rgba(245,158,11,0.15); color: #fcd34d; border: 1px solid rgba(245,158,11,0.3); }
+    .sbadge-approved { background: rgba(16,185,129,0.15); color: #6ee7b7; border: 1px solid rgba(16,185,129,0.3); }
+    .sbadge-rejected { background: rgba(239,68,68,0.15); color: #fca5a5; border: 1px solid rgba(239,68,68,0.3); }
+
+    /* ═══════════════════════════════════════════════
+       ANIMATIONS
+    ═══════════════════════════════════════════════ */
+    @keyframes fadeSlideUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes pulse-ring {
+      0%   { box-shadow: 0 0 0 0 rgba(99,102,241,0.5); }
+      70%  { box-shadow: 0 0 0 12px rgba(99,102,241,0); }
+      100% { box-shadow: 0 0 0 0 rgba(99,102,241,0); }
+    }
+    .pulse { animation: pulse-ring 2s infinite; }
+
+    /* ═══════════════════════════════════════════════
+       MOBILE
+    ═══════════════════════════════════════════════ */
+    @media (max-width: 900px) {
+      .swimlane-header, .swimlanes { grid-template-columns: 1fr; }
+      .auth-split { grid-template-columns: 1fr; max-width: 320px; }
+      .services-grid { grid-template-columns: 1fr; }
+      .h-connector-group { max-width: 320px; }
+      .bridge-lanes { grid-template-columns: 1fr; }
+      .diagram-outer { overflow-x: auto; min-width: 320px; }
+    }
+
+    /* ═══════════════════════════════════════════════
+       SCROLL OVERFLOW WRAPPER
+    ═══════════════════════════════════════════════ */
+    .diagram-scroll {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      padding-bottom: 8px;
+    }
+    .diagram-scroll::-webkit-scrollbar { height: 4px; }
+    .diagram-scroll::-webkit-scrollbar-track { background: var(--surface); border-radius: 2px; }
+    .diagram-scroll::-webkit-scrollbar-thumb { background: var(--border-bright); border-radius: 2px; }
+
+    /* Glow pulse for active nodes */
+    .flow-node.glow-pulse {
+      animation: nodePulse 1.5s ease-in-out 3;
+    }
+    @keyframes nodePulse {
+      0%, 100% { box-shadow: none; }
+      50% { box-shadow: 0 0 30px 6px var(--nc, rgba(99,102,241,0.5)); }
+    }
+
+    /* Footer */
+    .site-footer {
+      text-align: center; padding: 32px 0 0;
+      font-size: 0.72rem; color: var(--text-muted);
+      opacity: 0; animation: fadeSlideUp 0.7s 1.1s ease forwards;
+    }
+    .site-footer a { color: var(--text-secondary); text-decoration: none; }
+    .site-footer a:hover { color: #a5b4fc; }
+
+    /* ═══════════════════════════════════════════════
+       FLOATING NAV
+    ═══════════════════════════════════════════════ */
+    .float-nav {
+      position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%);
+      display: flex; gap: 8px;
+      background: rgba(13,17,23,0.85);
+      border: 1px solid var(--border-bright);
+      border-radius: 999px;
+      padding: 10px 18px;
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      z-index: 50;
+      box-shadow: 0 8px 40px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.04);
+      opacity: 0; animation: fadeSlideUp 0.6s 1.3s ease forwards;
+    }
+    .float-nav-btn {
+      display: flex; align-items: center; gap: 6px;
+      font-size: 0.73rem; font-weight: 600; letter-spacing: 0.03em;
+      padding: 6px 13px; border-radius: 999px;
+      border: 1px solid transparent;
+      cursor: pointer; transition: var(--transition);
+      background: none; color: var(--text-secondary);
+    }
+    .float-nav-btn i { font-size: 0.7rem; }
+    .float-nav-btn:hover { background: rgba(255,255,255,0.07); color: var(--text-primary); border-color: var(--border-bright); }
+    .float-nav-btn.fnb-student { color: #a5b4fc; }
+    .float-nav-btn.fnb-student:hover { background: rgba(99,102,241,0.15); border-color: rgba(99,102,241,0.3); }
+    .float-nav-btn.fnb-faculty { color: #fcd34d; }
+    .float-nav-btn.fnb-faculty:hover { background: rgba(245,158,11,0.12); border-color: rgba(245,158,11,0.3); }
+    .float-nav-btn.fnb-admin   { color: #f9a8d4; }
+    .float-nav-btn.fnb-admin:hover   { background: rgba(236,72,153,0.12); border-color: rgba(236,72,153,0.3); }
+    .fnav-divider { width: 1px; background: var(--border); margin: 4px 4px; }
+
+    /* ═══════════════════════════════════════════════
+       TOOLTIP HINT (first visit)
+    ═══════════════════════════════════════════════ */
+    .hint-chip {
+      position: fixed; top: 20px; right: 20px; z-index: 60;
+      background: rgba(99,102,241,0.15);
+      border: 1px solid rgba(99,102,241,0.3);
+      border-radius: 999px; padding: 8px 14px;
+      font-size: 0.72rem; font-weight: 500; color: #a5b4fc;
+      display: flex; align-items: center; gap: 7px;
+      animation: fadeSlideUp 0.5s 1.5s ease both;
+      cursor: pointer; transition: var(--transition);
+    }
+    .hint-chip:hover { background: rgba(99,102,241,0.22); }
+    .hint-chip i { animation: bounce 1.5s infinite; }
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-3px); }
+    }
+
+    /* ═══════════════════════════════════════════════
+       ROLE DASHBOARD CARDS - at top of swimlanes
+    ═══════════════════════════════════════════════ */
+    .role-badge-row {
+      display: flex; justify-content: center; gap: 12px;
+      flex-wrap: wrap; margin-bottom: 8px;
+      opacity: 0; animation: fadeSlideUp 0.7s 0.65s ease forwards;
+    }
+    .role-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 7px 16px; border-radius: 999px;
+      font-size: 0.75rem; font-weight: 600;
+      border: 1px solid; cursor: default;
+    }
+    .rb-student { background: rgba(99,102,241,0.12); border-color: rgba(99,102,241,0.3); color: #a5b4fc; }
+    .rb-faculty { background: rgba(245,158,11,0.12); border-color: rgba(245,158,11,0.3); color: #fcd34d; }
+    .rb-admin   { background: rgba(236,72,153,0.12); border-color: rgba(236,72,153,0.3); color: #f9a8d4; }
+
+    /* ═══════════════════════════════════════════════
+       PARTICLE DOTS (decorative)
+    ═══════════════════════════════════════════════ */
+    .particle {
+      position: fixed; pointer-events: none; z-index: 0;
+      width: 4px; height: 4px; border-radius: 50%;
+      opacity: 0.3;
+      animation: particleFloat linear infinite;
+    }
+    @keyframes particleFloat {
+      0%   { transform: translateY(100vh) scale(0); opacity: 0; }
+      10%  { opacity: 0.4; }
+      90%  { opacity: 0.2; }
+      100% { transform: translateY(-10vh) scale(1.5); opacity: 0; }
+    }
+
+    /* ═══════════════════════════════════════════════
+       NODE COUNTER BADGE
+    ═══════════════════════════════════════════════ */
+    .node-counter {
+      position: absolute; top: -8px; right: -8px;
+      width: 20px; height: 20px; border-radius: 50%;
+      font-size: 0.58rem; font-weight: 700;
+      display: flex; align-items: center; justify-content: center;
+      border: 1.5px solid var(--bg2);
+      color: white;
+    }
+
+    /* ═══════════════════════════════════════════════
+       TECH STACK STRIP
+    ═══════════════════════════════════════════════ */
+    .tech-strip {
+      display: flex; flex-wrap: wrap; gap: 10px;
+      justify-content: center; margin: 32px 0 0;
+      opacity: 0; animation: fadeSlideUp 0.7s 1.05s ease forwards;
+    }
+    .tech-chip {
+      display: inline-flex; align-items: center; gap: 7px;
+      padding: 8px 14px; border-radius: var(--radius-sm);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      font-size: 0.74rem; font-weight: 500;
+      color: var(--text-secondary);
+      transition: var(--transition);
+    }
+    .tech-chip:hover { border-color: var(--border-bright); color: var(--text-primary); background: var(--surface-hover); }
+    .tech-chip i { font-size: 0.85rem; }
+  </style>
+</head>
+<body>
+
+<!-- Background layers -->
+<div class="bg-mesh"></div>
+<div class="bg-grid"></div>
+
+<!-- ════════════════════════════════════════
+     PAGE WRAPPER
+════════════════════════════════════════ -->
+<div class="page-wrapper">
+
+  <!-- ── HEADER ── -->
+  <header class="site-header">
+    <div class="header-badge">
+      <i class="fas fa-cog"></i>
+      System Architecture · UI Workflow Map
+    </div>
+    <h1 class="site-title">CHARUSAT eNOC Portal</h1>
+    <p class="site-subtitle">Complete UI Workflow &amp; System Architecture Map for the College Internship NOC Management Portal — Interactive, Click to Explore</p>
+  </header>
+
+  <!-- ── KPI STATS BAR ── -->
+  <div class="stats-bar">
+    <div class="stat-pill sp-screens">
+      <i class="fas fa-layer-group"></i>
+      <span class="stat-num">14</span> Screens
+    </div>
+    <div class="stat-pill sp-routes">
+      <i class="fas fa-route"></i>
+      <span class="stat-num">6</span> API Route Groups
+    </div>
+    <div class="stat-pill sp-roles">
+      <i class="fas fa-users"></i>
+      <span class="stat-num">3</span> User Roles
+    </div>
+    <div class="stat-pill sp-auth">
+      <i class="fas fa-shield-halved"></i>
+      <span class="stat-num">2</span> Auth Methods
+    </div>
+    <div class="stat-pill sp-models">
+      <i class="fas fa-database"></i>
+      <span class="stat-num">5</span> DB Models
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════
+       MAIN DIAGRAM
+  ══════════════════════════════════ -->
+  <div class="diagram-scroll">
+  <div class="diagram-outer">
+
+    <!-- 1. ENTRY NODE -->
+    <div class="entry-zone">
+      <div class="section-label"><i class="fas fa-door-open" style="color:var(--auth);font-size:0.7rem"></i> Entry Point</div>
+      <div class="flow-node node-entry top-entry pulse"
+           data-id="entry"
+           onclick="showPopover('entry')">
+        <span class="node-icon">🌐</span>
+        <div class="node-title">Landing Page &amp; Login Gateway</div>
+        <div class="node-sub">index.html</div>
+        <div class="node-badge"><i class="fas fa-circle" style="color:#0ea5e9;font-size:0.45rem"></i> http://localhost:8080</div>
+      </div>
+    </div>
+
+    <!-- connector -->
+    <div class="connector conn-auth" style="opacity:0;animation:fadeSlideUp 0.5s 0.38s ease forwards">
+      <div class="conn-line" style="height:32px"></div>
+      <div class="conn-arrow"></div>
+    </div>
+
+    <!-- 2. AUTH DECISION -->
+    <div class="diamond-wrap">
+      <div class="diamond" onclick="showPopover('auth-decision')">
+        <div class="diamond-inner">
+          <i class="fas fa-code-branch"></i>
+          <span>Auth<br>Method?</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- connector -->
+    <div class="connector conn-auth" style="opacity:0;animation:fadeSlideUp 0.5s 0.47s ease forwards">
+      <div class="conn-line" style="height:20px"></div>
+      <div class="conn-arrow"></div>
+    </div>
+
+    <!-- 3. AUTH METHODS SPLIT -->
+    <div class="auth-split" style="max-width:640px">
+      <div class="flow-node node-auth" onclick="showPopover('google-oauth')">
+        <span class="node-icon">🔵</span>
+        <div class="node-title">Google OAuth 2.0</div>
+        <div class="node-sub">google-auth.js</div>
+        <div class="node-badge">@charusat.edu.in · Students</div>
+      </div>
+      <div class="flow-node node-auth" onclick="showPopover('direct-login')">
+        <span class="node-icon">🔒</span>
+        <div class="node-title">Direct Login + JWT</div>
+        <div class="node-sub">POST /api/auth/login</div>
+        <div class="node-badge">@charusat.ac.in · Faculty/Admin</div>
+      </div>
+    </div>
+
+    <!-- connector to JWT issued -->
+    <div class="connector conn-auth" style="opacity:0;animation:fadeSlideUp 0.5s 0.52s ease forwards">
+      <div class="conn-line" style="height:20px"></div>
+      <div class="conn-label">JWT Token Issued + Role Detected</div>
+      <div class="conn-line" style="height:16px"></div>
+      <div class="conn-arrow"></div>
+    </div>
+
+    <!-- 4. ROLE ROUTING NODE -->
+    <div class="role-bridge">
+      <div class="flow-node node-auth" style="min-width:260px" onclick="showPopover('role-router')">
+        <span class="node-icon">🔀</span>
+        <div class="node-title">Role-Based Router</div>
+        <div class="node-sub">auth.js middleware</div>
+        <div class="node-badge">JWT Verified · Role Extracted</div>
+      </div>
+    </div>
+
+    <!-- connector -->
+    <div class="connector conn-auth" style="opacity:0;animation:fadeSlideUp 0.5s 0.58s ease forwards">
+      <div class="conn-line" style="height:20px"></div>
+      <div class="conn-arrow"></div>
+    </div>
+
+    <!-- 5. SWIMLANE HEADERS -->
+    <div class="swimlane-header" style="width:100%">
+      <div class="lane-label lane-student">
+        <i class="fas fa-graduation-cap"></i> Student Workflow
+      </div>
+      <div class="lane-label lane-faculty">
+        <i class="fas fa-chalkboard-teacher"></i> Faculty Workflow
+      </div>
+      <div class="lane-label lane-admin">
+        <i class="fas fa-shield-halved"></i> Admin Workflow
+      </div>
+    </div>
+
+    <!-- 6. SWIMLANE BODIES -->
+    <div class="swimlanes" style="width:100%">
+
+      <!-- ── STUDENT LANE ── -->
+      <div class="lane-body lane-body-student">
+        <!-- Dashboard -->
+        <div class="lane-node">
+          <div class="flow-node node-student" onclick="showPopover('student-dashboard')">
+            <span class="node-icon">🎓</span>
+            <div class="node-title">Student Dashboard</div>
+            <div class="node-sub">student-dashboard.html</div>
+            <div class="status-row">
+              <span class="sbadge sbadge-pending">Pending</span>
+              <span class="sbadge sbadge-approved">Approved</span>
+              <span class="sbadge sbadge-rejected">Rejected</span>
+            </div>
+          </div>
+        </div>
+        <div class="connector conn-student"><div class="conn-line" style="height:24px"></div><div class="conn-arrow"></div></div>
+
+        <!-- NOC Request Form -->
+        <div class="lane-node">
+          <div class="flow-node node-student" onclick="showPopover('noc-request')">
+            <span class="node-icon">📝</span>
+            <div class="node-title">NOC Request Form</div>
+            <div class="node-sub">noc-request.html</div>
+            <div class="node-badge">Multi-step Wizard</div>
+          </div>
+        </div>
+        <div class="connector conn-student"><div class="conn-line" style="height:20px"></div><div class="conn-arrow"></div></div>
+
+        <!-- Company Select -->
+        <div class="lane-node">
+          <div class="flow-node node-student" onclick="showPopover('company-select')">
+            <span class="node-icon">🏢</span>
+            <div class="node-title">Company Selection</div>
+            <div class="node-sub">GET /api/companies</div>
+            <div class="node-badge">Searchable Dropdown</div>
+          </div>
+        </div>
+        <div class="connector conn-student"><div class="conn-line" style="height:20px"></div><div class="conn-arrow"></div></div>
+
+        <!-- Submit NOC -->
+        <div class="lane-node">
+          <div class="flow-node node-student" onclick="showPopover('submit-noc')">
+            <span class="node-icon">📤</span>
+            <div class="node-title">Submit NOC Request</div>
+            <div class="node-sub">POST /api/noc</div>
+            <div class="node-badge">JWT Auth Required</div>
+          </div>
+        </div>
+        <div class="connector conn-student"><div class="conn-line" style="height:20px"></div><div class="conn-arrow"></div></div>
+
+        <!-- Pending State -->
+        <div class="lane-node">
+          <div class="flow-node node-student" onclick="showPopover('pending-state')" style="border-color:rgba(245,158,11,0.3)">
+            <span class="node-icon">⏳</span>
+            <div class="node-title">Awaiting Review</div>
+            <div class="node-sub">status: PENDING</div>
+            <div class="status-row"><span class="sbadge sbadge-pending">Pending</span></div>
+          </div>
+        </div>
+        <div class="connector conn-student"><div class="conn-line" style="height:20px"></div><div class="conn-arrow"></div></div>
+
+        <!-- Result split -->
+        <div class="lane-node">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+            <div class="flow-node node-success" onclick="showPopover('noc-approved')" style="padding:12px 10px">
+              <span class="node-icon" style="font-size:1rem">✅</span>
+              <div class="node-title" style="font-size:0.75rem">Approved</div>
+              <div class="node-sub">PDF Generated</div>
+            </div>
+            <div class="flow-node node-danger" onclick="showPopover('noc-rejected')" style="padding:12px 10px">
+              <span class="node-icon" style="font-size:1rem">❌</span>
+              <div class="node-title" style="font-size:0.75rem">Rejected</div>
+              <div class="node-sub">Email Sent</div>
+            </div>
+          </div>
+        </div>
+        <div class="connector conn-student"><div class="conn-line" style="height:20px"></div><div class="conn-arrow"></div></div>
+
+        <!-- Download PDF -->
+        <div class="lane-node">
+          <div class="flow-node node-success" onclick="showPopover('download-pdf')">
+            <span class="node-icon">📄</span>
+            <div class="node-title">Download NOC PDF</div>
+            <div class="node-sub">GET /api/noc/:id/pdf</div>
+            <div class="node-badge">📧 Email Notification</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── FACULTY LANE ── -->
+      <div class="lane-body lane-body-faculty">
+        <!-- Faculty Dashboard -->
+        <div class="lane-node">
+          <div class="flow-node node-faculty" onclick="showPopover('faculty-dashboard')">
+            <span class="node-icon">🧑‍🏫</span>
+            <div class="node-title">Faculty Dashboard</div>
+            <div class="node-sub">faculty-dashboard.html</div>
+            <div class="node-badge">Review Queue</div>
+          </div>
+        </div>
+        <div class="connector conn-faculty"><div class="conn-line" style="height:24px"></div><div class="conn-arrow"></div></div>
+
+        <!-- Pending Queue -->
+        <div class="lane-node">
+          <div class="flow-node node-faculty" onclick="showPopover('pending-queue')">
+            <span class="node-icon">📥</span>
+            <div class="node-title">NOC Pending Queue</div>
+            <div class="node-sub">GET /api/noc/pending</div>
+            <div class="node-badge">Filterable Data Table</div>
+          </div>
+        </div>
+        <div class="connector conn-faculty"><div class="conn-line" style="height:20px"></div><div class="conn-arrow"></div></div>
+
+        <!-- NOC Review Detail -->
+        <div class="lane-node">
+          <div class="flow-node node-faculty" onclick="showPopover('noc-review')">
+            <span class="node-icon">🔍</span>
+            <div class="node-title">NOC Detail Review</div>
+            <div class="node-sub">faculty-noc-review.html</div>
+            <div class="node-badge">Split-Pane Layout</div>
+          </div>
+        </div>
+        <div class="connector conn-faculty"><div class="conn-line" style="height:20px"></div><div class="conn-arrow"></div></div>
+
+        <!-- E-Signature -->
+        <div class="lane-node">
+          <div class="flow-node node-faculty" onclick="showPopover('e-signature')">
+            <span class="node-icon">✍️</span>
+            <div class="node-title">E-Signature Capture</div>
+            <div class="node-sub">POST /api/signatures</div>
+            <div class="node-badge">Signature Canvas</div>
+          </div>
+        </div>
+        <div class="connector conn-faculty"><div class="conn-line" style="height:20px"></div><div class="conn-arrow"></div></div>
+
+        <!-- Faculty Decision -->
+        <div class="lane-node">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+            <div class="flow-node node-success" onclick="showPopover('faculty-approve')" style="padding:12px 10px">
+              <span class="node-icon" style="font-size:1rem">✅</span>
+              <div class="node-title" style="font-size:0.75rem">Approve</div>
+              <div class="node-sub">PATCH status</div>
+            </div>
+            <div class="flow-node node-danger" onclick="showPopover('faculty-reject')" style="padding:12px 10px">
+              <span class="node-icon" style="font-size:1rem">❌</span>
+              <div class="node-title" style="font-size:0.75rem">Reject</div>
+              <div class="node-sub">Reason Modal</div>
+            </div>
+          </div>
+        </div>
+        <div class="connector conn-faculty"><div class="conn-line" style="height:20px"></div><div class="conn-arrow"></div></div>
+
+        <!-- Email Notification -->
+        <div class="lane-node">
+          <div class="flow-node node-faculty" onclick="showPopover('email-notify')">
+            <span class="node-icon">📧</span>
+            <div class="node-title">Email Notification</div>
+            <div class="node-sub">POST /api/email/send</div>
+            <div class="node-badge">Nodemailer · Gmail SMTP</div>
+          </div>
+        </div>
+        <div class="connector conn-faculty"><div class="conn-line" style="height:20px"></div><div class="conn-arrow"></div></div>
+
+        <!-- Queue Refreshed -->
+        <div class="lane-node">
+          <div class="flow-node node-faculty" onclick="showPopover('queue-refresh')" style="border-color:rgba(245,158,11,0.3)">
+            <span class="node-icon">🔄</span>
+            <div class="node-title">Queue Refreshed</div>
+            <div class="node-sub">GET /api/noc/pending</div>
+            <div class="status-row"><span class="sbadge sbadge-approved">Approved</span><span class="sbadge sbadge-rejected">Rejected</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── ADMIN LANE ── -->
+      <div class="lane-body lane-body-admin">
+        <!-- Admin Dashboard -->
+        <div class="lane-node">
+          <div class="flow-node node-admin" onclick="showPopover('admin-dashboard')">
+            <span class="node-icon">🛡️</span>
+            <div class="node-title">Admin Control Center</div>
+            <div class="node-sub">admin-dashboard.html</div>
+            <div class="node-badge">Analytics + KPIs</div>
+          </div>
+        </div>
+        <div class="connector conn-admin"><div class="conn-line" style="height:24px"></div><div class="conn-arrow"></div></div>
+
+        <!-- User Management -->
+        <div class="lane-node">
+          <div class="flow-node node-admin" onclick="showPopover('user-mgmt')">
+            <span class="node-icon">👥</span>
+            <div class="node-title">User Management</div>
+            <div class="node-sub">GET/PUT /api/users</div>
+            <div class="node-badge">Role Toggle · Activate/Deactivate</div>
+          </div>
+        </div>
+        <div class="connector conn-admin"><div class="conn-line" style="height:20px"></div><div class="conn-arrow"></div></div>
+
+        <!-- Analytics Dashboard -->
+        <div class="lane-node">
+          <div class="flow-node node-admin" onclick="showPopover('analytics')">
+            <span class="node-icon">📊</span>
+            <div class="node-title">NOC Analytics</div>
+            <div class="node-sub">GET /api/noc/stats</div>
+            <div class="node-badge">Charts · Export Reports</div>
+          </div>
+        </div>
+        <div class="connector conn-admin"><div class="conn-line" style="height:20px"></div><div class="conn-arrow"></div></div>
+
+        <!-- Company Registry -->
+        <div class="lane-node">
+          <div class="flow-node node-admin" onclick="showPopover('company-registry')">
+            <span class="node-icon">🏢</span>
+            <div class="node-title">Company Registry</div>
+            <div class="node-sub">GET /api/companies</div>
+            <div class="node-badge">CRUD Data Table</div>
+          </div>
+        </div>
+        <div class="connector conn-admin"><div class="conn-line" style="height:20px"></div><div class="conn-arrow"></div></div>
+
+        <!-- Bulk Import -->
+        <div class="lane-node">
+          <div class="flow-node node-admin" onclick="showPopover('bulk-import')">
+            <span class="node-icon">📥</span>
+            <div class="node-title">Bulk Import</div>
+            <div class="node-sub">companyImportService.js</div>
+            <div class="node-badge">Excel / CSV Upload</div>
+          </div>
+        </div>
+        <div class="connector conn-admin"><div class="conn-line" style="height:20px"></div><div class="conn-arrow"></div></div>
+
+        <!-- Reports Export -->
+        <div class="lane-node">
+          <div class="flow-node node-admin" onclick="showPopover('reports')">
+            <span class="node-icon">📈</span>
+            <div class="node-title">Reports &amp; Export</div>
+            <div class="node-sub">GET /api/noc/export</div>
+            <div class="node-badge">Filter · Download</div>
+          </div>
+        </div>
+        <div class="connector conn-admin"><div class="conn-line" style="height:20px"></div><div class="conn-arrow"></div></div>
+
+        <!-- Audit / Logs -->
+        <div class="lane-node">
+          <div class="flow-node node-admin" onclick="showPopover('email-logs')">
+            <span class="node-icon">📋</span>
+            <div class="node-title">Email Logs &amp; Audit</div>
+            <div class="node-sub">GET /api/email/logs</div>
+            <div class="node-badge">EmailLog Model</div>
+          </div>
+        </div>
+      </div>
+    </div><!-- end swimlanes -->
+
+    <!-- ── SHARED SERVICES SECTION ── -->
+    <div class="services-section" style="width:100%">
+      <div class="section-label" style="margin-bottom:20px">
+        <i class="fas fa-server" style="color:var(--service);font-size:0.7rem"></i> Backend Services &amp; Infrastructure
+      </div>
+
+      <!-- Connector to services -->
+      <div style="display:flex;justify-content:center;margin-bottom:16px">
+        <div class="connector conn-auth">
+          <div class="conn-line" style="height:20px"></div>
+          <div class="conn-label">All Roles → Express API</div>
+          <div class="conn-line" style="height:12px"></div>
+          <div class="conn-arrow"></div>
+        </div>
+      </div>
+
+      <div class="services-grid">
+        <!-- Express API -->
+        <div class="flow-node node-service" onclick="showPopover('express-api')">
+          <span class="node-icon">⚙️</span>
+          <div class="node-title">Express.js REST API</div>
+          <div class="node-sub">localhost:5000/api</div>
+          <div class="node-badge">server.js · JWT Middleware</div>
+        </div>
+        <!-- MySQL -->
+        <div class="flow-node node-service" onclick="showPopover('mysql-db')">
+          <span class="node-icon">🗄️</span>
+          <div class="node-title">MySQL + Sequelize ORM</div>
+          <div class="node-sub">config/database.js</div>
+          <div class="node-badge">5 Models · ACID Transactions</div>
+        </div>
+        <!-- Nodemailer -->
+        <div class="flow-node node-service" onclick="showPopover('nodemailer')">
+          <span class="node-icon">📮</span>
+          <div class="node-title">Nodemailer / Gmail SMTP</div>
+          <div class="node-sub">services/email.js</div>
+          <div class="node-badge">Approval · Rejection · Alerts</div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- end diagram-outer -->
+  </div><!-- end diagram-scroll -->
+
+  <!-- ── LEGEND ── -->
+  <div class="legend">
+    <div class="legend-item"><div class="legend-dot" style="background:#0ea5e9;box-shadow:0 0 6px rgba(14,165,233,0.6)"></div> Auth / Entry</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#6366f1;box-shadow:0 0 6px rgba(99,102,241,0.6)"></div> Student Flow</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#f59e0b;box-shadow:0 0 6px rgba(245,158,11,0.6)"></div> Faculty Flow</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#ec4899;box-shadow:0 0 6px rgba(236,72,153,0.6)"></div> Admin Flow</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#8b5cf6;box-shadow:0 0 6px rgba(139,92,246,0.6)"></div> Shared Service</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#10b981;box-shadow:0 0 6px rgba(16,185,129,0.6)"></div> Success / Approved</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#ef4444;box-shadow:0 0 6px rgba(239,68,68,0.6)"></div> Error / Rejected</div>
+    <div class="legend-item" style="gap:5px"><div class="legend-line" style="color:#0ea5e9;width:28px;height:2px;background:linear-gradient(90deg,#0ea5e9,rgba(14,165,233,0))"></div> Animated Data Flow</div>
+    <div class="legend-item">
+      <div style="width:18px;height:18px;background:rgba(14,165,233,0.12);border:1.5px solid rgba(14,165,233,0.4);transform:rotate(45deg);border-radius:3px"></div>
+      Decision Point
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <p>CHARUSAT eNOC Portal · UI Workflow System Map · Built with Express.js, MySQL &amp; Google OAuth 2.0</p>
+    <p style="margin-top:6px">Click any node to explore screen details, UI components, and API endpoints</p>
+  </footer>
+
+  <!-- Tech Stack Strip -->
+  <div class="tech-strip">
+    <div class="tech-chip"><i class="fab fa-node-js" style="color:#68a063"></i> Node.js v18+</div>
+    <div class="tech-chip"><i class="fas fa-bolt" style="color:#f59e0b"></i> Express.js</div>
+    <div class="tech-chip"><i class="fas fa-database" style="color:#4479A1"></i> MySQL 8.0</div>
+    <div class="tech-chip"><i class="fab fa-google" style="color:#4285f4"></i> Google OAuth 2.0</div>
+    <div class="tech-chip"><i class="fas fa-key" style="color:#ec4899"></i> JWT Auth</div>
+    <div class="tech-chip"><i class="fas fa-envelope" style="color:#10b981"></i> Nodemailer</div>
+    <div class="tech-chip"><i class="fab fa-js" style="color:#f0db4f"></i> Vanilla JS</div>
+    <div class="tech-chip"><i class="fas fa-file-pdf" style="color:#ef4444"></i> PDF Generation</div>
+  </div>
+
+</div><!-- end page-wrapper -->
+
+<!-- ════════════════════════════════════════
+     FLOATING NAVIGATION
+════════════════════════════════════════ -->
+<div class="float-nav">
+  <button class="float-nav-btn" onclick="scrollTop()">
+    <i class="fas fa-home"></i> Top
+  </button>
+  <div class="fnav-divider"></div>
+  <button class="float-nav-btn fnb-student" onclick="scrollToLane('student')">
+    <i class="fas fa-graduation-cap"></i> Student
+  </button>
+  <button class="float-nav-btn fnb-faculty" onclick="scrollToLane('faculty')">
+    <i class="fas fa-chalkboard-teacher"></i> Faculty
+  </button>
+  <button class="float-nav-btn fnb-admin" onclick="scrollToLane('admin')">
+    <i class="fas fa-shield-halved"></i> Admin
+  </button>
+  <div class="fnav-divider"></div>
+  <button class="float-nav-btn" onclick="scrollToServices()">
+    <i class="fas fa-server"></i> Services
+  </button>
+</div>
+
+<!-- Hint chip -->
+<div class="hint-chip" id="hintChip" onclick="this.style.display='none'">
+  <i class="fas fa-hand-pointer"></i>
+  Click any node to explore
+</div>
+
+<!-- ════════════════════════════════════════
+     POPOVER OVERLAY
+════════════════════════════════════════ -->
+<div class="popover-overlay" id="popoverOverlay" onclick="closePopover(event)">
+  <div class="popover-card" id="popoverCard">
+    <button class="popover-close" onclick="closePopoverBtn()"><i class="fas fa-times"></i></button>
+    <div id="popoverContent"></div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════
+     JAVASCRIPT
+════════════════════════════════════════ -->
+<script>
+// ─── NODE DATA ────────────────────────────────────────────────────────────────
+const nodeData = {
+  'entry': {
+    icon: '🌐', color: 'blue',
+    title: 'Landing Page & Login Gateway',
+    file: 'client/index.html',
+    type: 'Entry Screen',
+    description: 'The first page users see. Contains the hero section, authentication options, and routing logic based on user role after successful login.',
+    components: ['Hero Section with animated background', 'Google OAuth Sign-In Button', 'JWT Email/Password Login Form', 'Role-based redirect logic', 'Error Toast Notification', 'Loading Spinner'],
+    apis: [],
+    tags: [{ label: 'HTML5', c: '' }, { label: 'Vanilla JS', c: '' }, { label: 'Google SDK', c: 'blue' }]
+  },
+  'auth-decision': {
+    icon: '🔀', color: 'blue',
+    title: 'Authentication Decision Gate',
+    file: 'middleware/auth.js',
+    type: 'Decision Point',
+    description: 'Determines authentication method based on email domain. Students use Google OAuth 2.0. Faculty and Admin use direct JWT-based login.',
+    components: ['Email domain validator', 'Role detection logic', 'JWT token parser'],
+    apis: [{ method: 'POST', path: '/api/auth/google', desc: 'Google OAuth token exchange' }, { method: 'POST', path: '/api/auth/login', desc: 'Direct login (faculty/admin)' }],
+    tags: [{ label: '@charusat.edu.in → Student', c: 'accent' }, { label: '@charusat.ac.in → Faculty/Admin', c: 'amber' }]
+  },
+  'google-oauth': {
+    icon: '🔵', color: 'blue',
+    title: 'Google OAuth 2.0',
+    file: 'client/js/google-auth.js',
+    type: 'Auth Method',
+    description: 'Student authentication using Google Identity Services. Validates @charusat.edu.in domain, exchanges id_token with backend for app JWT.',
+    components: ['Google Identity Services SDK', 'Domain validation', 'Token exchange flow', 'localStorage persistence'],
+    apis: [{ method: 'POST', path: '/api/auth/google', desc: 'Exchange Google id_token for app JWT' }],
+    tags: [{ label: 'Students Only', c: 'accent' }, { label: '@charusat.edu.in', c: 'blue' }, { label: 'Google Cloud Console', c: '' }]
+  },
+  'direct-login': {
+    icon: '🔒', color: 'blue',
+    title: 'Direct Login + JWT',
+    file: 'backend/routes/auth.js',
+    type: 'Auth Method',
+    description: 'Email/password authentication for Faculty and Admin. Validates credentials, issues a signed JWT with role embedded.',
+    components: ['Email input field', 'Password field + show/hide toggle', 'JWT issue on success', 'Error handling Toast'],
+    apis: [{ method: 'POST', path: '/api/auth/login', desc: 'Login with email + password' }, { method: 'POST', path: '/api/auth/forgot-password', desc: 'Password reset request' }],
+    tags: [{ label: 'Faculty', c: 'amber' }, { label: 'Admin', c: 'pink' }, { label: 'JWT', c: 'blue' }]
+  },
+  'role-router': {
+    icon: '🔀', color: 'blue',
+    title: 'Role-Based Router',
+    file: 'backend/middleware/auth.js',
+    type: 'Middleware',
+    description: 'After JWT is validated, the role field is extracted and the user is redirected to their appropriate dashboard. Prevents cross-role page access.',
+    components: ['JWT decode + verify', 'Role extraction', 'Dashboard redirect logic', '401/403 guard on API routes'],
+    apis: [],
+    tags: [{ label: 'student → /student-dashboard', c: 'accent' }, { label: 'faculty → /faculty-dashboard', c: 'amber' }, { label: 'admin → /admin-dashboard', c: 'pink' }]
+  },
+  'student-dashboard': {
+    icon: '🎓', color: 'accent',
+    title: 'Student Dashboard',
+    file: 'client/student-dashboard.html',
+    type: 'Screen',
+    description: 'Personal hub for students showing all their NOC requests with status, KPI summary cards, and quick action to submit new NOC.',
+    components: ['KPI Summary Cards (Total/Pending/Approved/Rejected)', 'NOC History Data Table with sorting', 'Status Badge Chips (color-coded)', 'Empty State Illustration', 'Quick-Action FAB Button', 'Toast Notifications'],
+    apis: [{ method: 'GET', path: '/api/noc/mine', desc: 'Fetch student\'s own NOC list' }, { method: 'GET', path: '/api/noc/:id', desc: 'Get single NOC detail' }],
+    tags: [{ label: 'student-dashboard.js', c: '' }, { label: 'dashboard.css', c: '' }, { label: 'Role: Student', c: 'accent' }]
+  },
+  'noc-request': {
+    icon: '📝', color: 'accent',
+    title: 'NOC Request Form',
+    file: 'client/noc-request.html',
+    type: 'Screen',
+    description: 'The main form for students to submit a new NOC request. Designed as a 3-step wizard: Company → Details → Review & Submit.',
+    components: ['3-Step Form Wizard with Progress Bar', 'Searchable Company Dropdown', 'Date Range Picker (internship start/end)', 'Character-count Textarea', 'Live Form Validation', 'LocalStorage Draft Auto-save', 'Submit / Cancel CTAs'],
+    apis: [{ method: 'POST', path: '/api/noc', desc: 'Submit new NOC request' }, { method: 'GET', path: '/api/companies', desc: 'Load company dropdown options' }],
+    tags: [{ label: 'noc-request.js', c: '' }, { label: 'noc-request.css', c: '' }, { label: 'Multi-Step', c: 'accent' }]
+  },
+  'company-select': {
+    icon: '🏢', color: 'accent',
+    title: 'Company Selection Step',
+    file: 'client/noc-request.html → Step 1',
+    type: 'Form Step',
+    description: 'Step 1 of NOC form. Student searches and selects their internship company from the registry, or requests a new company addition.',
+    components: ['Searchable live-filter Dropdown', 'Company Preview Card (name, address, domain)', 'Request new company link', 'Validation: required field'],
+    apis: [{ method: 'GET', path: '/api/companies?search=query', desc: 'Live company search' }, { method: 'POST', path: '/api/companies', desc: 'Add new company (admin approval)' }],
+    tags: [{ label: 'Company Model', c: 'purple' }, { label: 'MySQL', c: 'purple' }]
+  },
+  'submit-noc': {
+    icon: '📤', color: 'accent',
+    title: 'Submit NOC Request',
+    file: 'backend/routes/noc.js',
+    type: 'API Action',
+    description: 'The core action that creates a new NOC record in the database. Requires valid JWT. Triggers email notification to assigned faculty.',
+    components: ['Submit Button with loading state', 'Optimistic UI update', 'Error handling with Retry', 'Success redirect to dashboard'],
+    apis: [{ method: 'POST', path: '/api/noc', desc: 'Create NOC record (status: PENDING)' }],
+    tags: [{ label: 'JWT Required', c: 'blue' }, { label: 'NOCRequest Model', c: 'purple' }, { label: 'Email Triggered', c: 'green' }]
+  },
+  'pending-state': {
+    icon: '⏳', color: 'amber',
+    title: 'NOC Awaiting Review',
+    file: 'NOCRequest.status = PENDING',
+    type: 'State',
+    description: 'The NOC has been submitted and is visible in the faculty review queue. The student sees a PENDING badge on their dashboard.',
+    components: ['PENDING status badge (amber)', 'Estimated review timeline', 'Cancel/withdraw option', 'Real-time status poll (30s interval)'],
+    apis: [{ method: 'GET', path: '/api/noc/mine/status', desc: 'Poll for status updates' }],
+    tags: [{ label: 'status: PENDING', c: 'amber' }, { label: 'DB: noc_requests', c: 'purple' }]
+  },
+  'noc-approved': {
+    icon: '✅', color: 'green',
+    title: 'NOC Approved',
+    file: 'NOCRequest.status = APPROVED',
+    type: 'Outcome',
+    description: 'Faculty has approved the NOC. PDF is automatically generated with e-signature, and student is notified via email.',
+    components: ['APPROVED badge (green)', 'PDF download button', 'Email confirmation', 'Confetti animation'],
+    apis: [],
+    tags: [{ label: 'status: APPROVED', c: 'green' }, { label: 'PDF Generated', c: 'green' }, { label: 'Email Sent', c: 'green' }]
+  },
+  'noc-rejected': {
+    icon: '❌', color: 'red',
+    title: 'NOC Rejected',
+    file: 'NOCRequest.status = REJECTED',
+    type: 'Outcome',
+    description: 'Faculty has rejected the NOC with a reason. Student is notified via email and can view the rejection reason on their dashboard.',
+    components: ['REJECTED badge (red)', 'Rejection reason display', 'Resubmit option', 'Email notification'],
+    apis: [],
+    tags: [{ label: 'status: REJECTED', c: 'red' }, { label: 'Reason Required', c: 'red' }, { label: 'Email Sent', c: 'amber' }]
+  },
+  'download-pdf': {
+    icon: '📄', color: 'green',
+    title: 'Download NOC PDF',
+    file: 'backend/routes/noc.js → /pdf',
+    type: 'API Action',
+    description: 'Generates and serves the signed NOC PDF. Includes student details, company info, internship dates, and faculty e-signature.',
+    components: ['PDF viewer preview', 'Download button', 'Share/Email option', 'Certificate number'],
+    apis: [{ method: 'GET', path: '/api/noc/:id/pdf', desc: 'Generate and download signed PDF' }],
+    tags: [{ label: 'E-Signature Embedded', c: 'green' }, { label: 'PDF Buffer', c: '' }, { label: 'Signature Model', c: 'purple' }]
+  },
+  'faculty-dashboard': {
+    icon: '🧑‍🏫', color: 'amber',
+    title: 'Faculty Dashboard',
+    file: 'client/faculty-dashboard.html',
+    type: 'Screen',
+    description: 'Command center for faculty. Shows pending NOC queue, weekly review progress, urgent flags, and bulk-action tools.',
+    components: ['Review Progress Bar (12/30)', 'Urgent Flag Badges (red)', 'Filter Tabs (All / Pending / This Week / Urgent)', 'Sortable Data Table', 'Bulk Select + Action Dropdown', 'Notification Bell'],
+    apis: [{ method: 'GET', path: '/api/noc/pending', desc: 'Load pending review queue' }, { method: 'GET', path: '/api/noc/stats', desc: 'Faculty review stats' }],
+    tags: [{ label: 'faculty-dashboard.js', c: '' }, { label: 'faculty-dashboard.css', c: '' }, { label: 'Role: Faculty', c: 'amber' }]
+  },
+  'pending-queue': {
+    icon: '📥', color: 'amber',
+    title: 'NOC Pending Queue',
+    file: 'client/faculty-dashboard.html → Queue Table',
+    type: 'Component',
+    description: 'Sortable, filterable table of all pending NOC requests assigned to this faculty. Supports bulk review actions.',
+    components: ['Sortable columns (date, student, urgency)', 'Quick-filter chips', 'Priority/Urgency auto-badge', 'Row click → detail view', 'Bulk checkbox select'],
+    apis: [{ method: 'GET', path: '/api/noc/pending?faculty=:id', desc: 'Get assigned pending NOCs' }],
+    tags: [{ label: 'Data Table', c: 'amber' }, { label: 'Bulk Actions', c: 'amber' }]
+  },
+  'noc-review': {
+    icon: '🔍', color: 'amber',
+    title: 'NOC Detail Review Page',
+    file: 'client/faculty-noc-review.html',
+    type: 'Screen',
+    description: 'Full-detail view of a single NOC request. Split-pane: student profile on left, request details on right. Faculty approves or rejects here.',
+    components: ['Split-pane layout (Student Info | Request Details)', 'Read-only field groups', 'Company details card', 'E-signature capture canvas', 'Approve Button (green)', 'Reject Button → Reason Modal', 'Loading overlay on submit'],
+    apis: [{ method: 'GET', path: '/api/noc/:id', desc: 'Fetch NOC details for review' }, { method: 'PATCH', path: '/api/noc/:id/approve', desc: 'Approve NOC' }, { method: 'PATCH', path: '/api/noc/:id/reject', desc: 'Reject with reason' }],
+    tags: [{ label: 'faculty-dashboard.js', c: '' }, { label: 'Split Layout', c: 'amber' }, { label: 'Role: Faculty', c: 'amber' }]
+  },
+  'e-signature': {
+    icon: '✍️', color: 'amber',
+    title: 'E-Signature Capture',
+    file: 'backend/routes/signatures.js',
+    type: 'Feature',
+    description: 'Faculty applies their digital signature to the NOC. Stored in the Signatures table and embedded in the generated PDF.',
+    components: ['Signature canvas (draw)', 'Clear / Redo buttons', 'Confirm signature action', 'Preview before submit'],
+    apis: [{ method: 'POST', path: '/api/signatures', desc: 'Store e-signature data' }, { method: 'GET', path: '/api/signatures/:facultyId', desc: 'Retrieve saved signature' }],
+    tags: [{ label: 'Signature Model', c: 'purple' }, { label: 'Canvas API', c: '' }, { label: 'PDF Embedded', c: 'amber' }]
+  },
+  'faculty-approve': {
+    icon: '✅', color: 'green',
+    title: 'Approve NOC',
+    file: 'backend/routes/noc.js → PATCH /approve',
+    type: 'API Action',
+    description: 'Atomic operation: updates NOC status to APPROVED, writes signature record, triggers PDF generation, and sends email to student.',
+    components: ['Confirm dialog', 'Loading overlay', 'Success toast', 'Auto queue refresh'],
+    apis: [{ method: 'PATCH', path: '/api/noc/:id/approve', desc: 'Approve + trigger PDF + email' }],
+    tags: [{ label: 'Sequelize Transaction', c: 'purple' }, { label: 'PDF Auto-Gen', c: 'green' }, { label: 'Email Triggered', c: 'green' }]
+  },
+  'faculty-reject': {
+    icon: '❌', color: 'red',
+    title: 'Reject NOC',
+    file: 'backend/routes/noc.js → PATCH /reject',
+    type: 'API Action',
+    description: 'Faculty provides a rejection reason in the modal. NOC status set to REJECTED. Email sent to student with reason.',
+    components: ['Rejection Reason Modal', 'Textarea for reason (required)', 'Confirm / Cancel buttons', 'Error toast if empty'],
+    apis: [{ method: 'PATCH', path: '/api/noc/:id/reject', desc: 'Reject with reason + email' }],
+    tags: [{ label: 'Reason Required', c: 'red' }, { label: 'Email Sent', c: 'amber' }]
+  },
+  'email-notify': {
+    icon: '📧', color: 'amber',
+    title: 'Email Notification Service',
+    file: 'backend/routes/email.js',
+    type: 'Service',
+    description: 'Sends templated emails via Nodemailer (Gmail SMTP) for NOC submission, approval, rejection, and system alerts.',
+    components: ['HTML email template', 'Nodemailer transporter', 'Retry logic on failure', 'EmailLog model for audit'],
+    apis: [{ method: 'POST', path: '/api/email/send', desc: 'Send email notification' }],
+    tags: [{ label: 'Nodemailer', c: 'amber' }, { label: 'Gmail SMTP', c: 'amber' }, { label: 'EmailLog Model', c: 'purple' }]
+  },
+  'queue-refresh': {
+    icon: '🔄', color: 'amber',
+    title: 'Queue Refresh',
+    file: 'client/js/faculty-dashboard.js',
+    type: 'State Update',
+    description: 'After each review action, the pending queue is refreshed to remove processed items. Review progress counter updates in real-time.',
+    components: ['Auto-remove reviewed item', 'Progress counter update', 'Empty state if queue clear', 'Success notification'],
+    apis: [{ method: 'GET', path: '/api/noc/pending', desc: 'Refresh queue after action' }],
+    tags: [{ label: 'Optimistic UI', c: 'amber' }, { label: 'Counter Update', c: '' }]
+  },
+  'admin-dashboard': {
+    icon: '🛡️', color: 'pink',
+    title: 'Admin Control Center',
+    file: 'client/admin-dashboard.html',
+    type: 'Screen',
+    description: 'Full administrative hub. Side navigation rail, KPI analytics cards, system health, recent activity feed, and quick-jump actions.',
+    components: ['Side Navigation Rail', 'KPI Analytics Cards', 'Line/Bar/Donut Charts (NOC trends)', 'Recent Activity Feed', 'System Health Status', 'Quick-jump Action Buttons'],
+    apis: [{ method: 'GET', path: '/api/noc/stats', desc: 'Overall NOC statistics' }, { method: 'GET', path: '/api/users/stats', desc: 'User registration stats' }],
+    tags: [{ label: 'admin-dashboard.js', c: '' }, { label: 'admin-dashboard.css', c: '' }, { label: 'Role: Admin', c: 'pink' }]
+  },
+  'user-mgmt': {
+    icon: '👥', color: 'pink',
+    title: 'User Management',
+    file: 'client/admin-dashboard.html → Users Tab',
+    type: 'Feature',
+    description: 'CRUD operations on user accounts. Admin can view all users, change roles, activate/deactivate accounts, and search by name/email.',
+    components: ['Searchable User Table', 'Role Dropdown (inline edit)', 'Toggle Switch (active/inactive)', 'Bulk Select + Action Dropdown', 'Confirmation Dialog', 'Export CSV'],
+    apis: [{ method: 'GET', path: '/api/users', desc: 'List all users' }, { method: 'PUT', path: '/api/users/:id', desc: 'Update user role/status' }, { method: 'DELETE', path: '/api/users/:id', desc: 'Deactivate user' }],
+    tags: [{ label: 'User Model', c: 'purple' }, { label: 'Role: Admin', c: 'pink' }, { label: 'Inline Edit', c: '' }]
+  },
+  'analytics': {
+    icon: '📊', color: 'pink',
+    title: 'NOC Analytics Dashboard',
+    file: 'client/admin-dashboard.html → Analytics Tab',
+    type: 'Feature',
+    description: 'Visual charts and metrics for NOC trends. Filter by date range, department, faculty, or status. Export filtered reports.',
+    components: ['Date Range Filter', 'Department/Faculty Filters', 'Bar Chart (NOC per month)', 'Donut Chart (status distribution)', 'Data Table with export', 'Download CSV/Excel'],
+    apis: [{ method: 'GET', path: '/api/noc/stats', desc: 'Aggregated NOC stats' }, { method: 'GET', path: '/api/noc/export', desc: 'Export filtered CSV' }],
+    tags: [{ label: 'Charts (Chart.js)', c: 'pink' }, { label: 'Export', c: '' }, { label: 'Filter', c: '' }]
+  },
+  'company-registry': {
+    icon: '🏢', color: 'pink',
+    title: 'Company Registry',
+    file: 'client/admin-dashboard.html → Companies Tab',
+    type: 'Feature',
+    description: 'Full CRUD management of the company database. Admin adds, edits, or removes companies. Students select from this registry.',
+    components: ['CRUD Data Table', 'Add/Edit Company Modal', 'Delete Confirmation Snackbar', 'Inline row editing', 'Search + Filter'],
+    apis: [{ method: 'GET', path: '/api/companies', desc: 'List all companies' }, { method: 'POST', path: '/api/companies', desc: 'Add new company' }, { method: 'PUT', path: '/api/companies/:id', desc: 'Update company' }, { method: 'DELETE', path: '/api/companies/:id', desc: 'Delete company' }],
+    tags: [{ label: 'Company Model', c: 'purple' }, { label: 'CRUD', c: 'pink' }]
+  },
+  'bulk-import': {
+    icon: '📥', color: 'pink',
+    title: 'Bulk Company Import',
+    file: 'backend/services/companyImportService.js',
+    type: 'Feature',
+    description: 'Admin uploads an Excel/CSV file to bulk-import company records. Validation, deduplication, and error reporting on import.',
+    components: ['Drag-and-Drop Upload Zone', 'File Type Validator (xlsx, csv)', 'Import Preview Table', 'Progress Bar on upload', 'Error row highlighting', 'Import summary toast'],
+    apis: [{ method: 'POST', path: '/api/companies/import', desc: 'Bulk import from Excel/CSV' }],
+    tags: [{ label: 'companyImportService.js', c: '' }, { label: 'Excel / CSV', c: 'pink' }, { label: 'Bulk Action', c: 'pink' }]
+  },
+  'reports': {
+    icon: '📈', color: 'pink',
+    title: 'Reports & Export',
+    file: 'backend/routes/noc.js → /export',
+    type: 'Feature',
+    description: 'Filtered report generation for audits and records. Admin exports NOC data with custom date ranges, departments, and statuses.',
+    components: ['Date range picker', 'Department / Faculty filters', 'Status multi-select', 'Preview count badge', 'Download CSV / Excel'],
+    apis: [{ method: 'GET', path: '/api/noc/export?from=&to=&status=', desc: 'Export filtered NOC data' }],
+    tags: [{ label: 'Filter', c: 'pink' }, { label: 'Export', c: '' }]
+  },
+  'email-logs': {
+    icon: '📋', color: 'pink',
+    title: 'Email Logs & Audit Trail',
+    file: 'backend/models/EmailLog.js',
+    type: 'Feature',
+    description: 'Searchable log of all system emails. Admin can view delivery status, timestamps, recipients, and email type for compliance.',
+    components: ['Email log table', 'Status indicators (sent/failed)', 'Search by recipient/type', 'Resend failed emails', 'Date filter'],
+    apis: [{ method: 'GET', path: '/api/email/logs', desc: 'Retrieve email audit logs' }],
+    tags: [{ label: 'EmailLog Model', c: 'purple' }, { label: 'Audit Trail', c: 'pink' }]
+  },
+  'express-api': {
+    icon: '⚙️', color: 'purple',
+    title: 'Express.js REST API',
+    file: 'backend/server.js',
+    type: 'Backend Service',
+    description: 'Node.js + Express API server running on port 5000. Handles all CRUD operations, serves JWT-protected endpoints, and coordinates all backend services.',
+    components: ['CORS middleware', 'JWT auth middleware (auth.js)', 'Route groups: /auth, /noc, /companies, /users, /signatures, /email', 'Request logging', 'Error handler', 'Health check: GET /api/health'],
+    apis: [{ method: 'GET', path: '/api/health', desc: 'Server health check' }],
+    tags: [{ label: 'Node.js v18+', c: 'purple' }, { label: 'Express.js', c: 'purple' }, { label: 'JWT', c: 'blue' }, { label: 'Port 5000', c: '' }]
+  },
+  'mysql-db': {
+    icon: '🗄️', color: 'purple',
+    title: 'MySQL + Sequelize ORM',
+    file: 'backend/config/database.js',
+    type: 'Data Layer',
+    description: 'MySQL 8.0 database with Sequelize ORM. 5 models with associations. Supports ACID transactions for atomic approve/reject operations.',
+    components: ['User model (OAuth profiles)', 'NOCRequest model (workflow state)', 'Company model (registry)', 'Signature model (e-signatures)', 'EmailLog model (audit trail)', 'Model associations (index.js)'],
+    apis: [],
+    tags: [{ label: 'MySQL 8.0', c: 'purple' }, { label: 'Sequelize ORM', c: 'purple' }, { label: 'ACID Transactions', c: 'blue' }, { label: '5 Models', c: '' }]
+  },
+  'nodemailer': {
+    icon: '📮', color: 'purple',
+    title: 'Nodemailer / Gmail SMTP',
+    file: 'backend/routes/email.js',
+    type: 'Email Service',
+    description: 'Email notification service using Nodemailer with Gmail SMTP. Sends HTML-templated emails for NOC events. Logs all sends to EmailLog.',
+    components: ['Gmail SMTP transporter', 'HTML email templates', 'Retry on failure', 'EmailLog write on send', 'Configurable via .env'],
+    apis: [{ method: 'POST', path: '/api/email/send', desc: 'Send notification email' }, { method: 'GET', path: '/api/email/logs', desc: 'View email audit log' }],
+    tags: [{ label: 'Nodemailer', c: 'purple' }, { label: 'Gmail SMTP', c: 'blue' }, { label: '.env Config', c: '' }]
+  }
+};
+
+// ─── METHOD COLORS ────────────────────────────────────────────────────────────
+function methodClass(m) {
+  const map = { GET:'method-get', POST:'method-post', PATCH:'method-patch', PUT:'method-put', DELETE:'method-delete' };
+  return map[m] || '';
+}
+
+// ─── TAG COLOR ────────────────────────────────────────────────────────────────
+function tagClass(c) {
+  const map = { accent:'accent', amber:'amber', pink:'pink', blue:'blue', green:'green', red:'red', purple:'purple', '':'' };
+  return map[c] !== undefined ? map[c] : '';
+}
+
+// ─── POPOVER ─────────────────────────────────────────────────────────────────
+function showPopover(id) {
+  const data = nodeData[id];
+  if (!data) return;
+
+  const apiHtml = data.apis.length
+    ? `<div class="popover-section-title">API Endpoints</div>
+       ${data.apis.map(a => `
+         <div class="api-endpoint">
+           <span class="method-badge ${methodClass(a.method)}">${a.method}</span>
+           <span>${a.path}</span>
+           <span style="color:var(--text-muted);font-size:0.65rem;margin-left:auto">${a.desc}</span>
+         </div>`).join('')}`
+    : '';
+
+  const compHtml = data.components.length
+    ? `<div class="popover-section-title">UI Components</div>
+       <div class="popover-tags">
+         ${data.components.map(c => `<span class="ptag">${c}</span>`).join('')}
+       </div>`
+    : '';
+
+  const tagHtml = data.tags.length
+    ? `<div class="popover-section-title">Technology Tags</div>
+       <div class="popover-tags">
+         ${data.tags.map(t => `<span class="ptag ${tagClass(t.c)}">${t.label}</span>`).join('')}
+       </div>`
+    : '';
+
+  document.getElementById('popoverContent').innerHTML = `
+    <div class="popover-icon">${data.icon}</div>
+    <div class="popover-title">${data.title}</div>
+    <div class="popover-file"><i class="fas fa-file-code" style="margin-right:5px"></i>${data.file}</div>
+    <span class="ptag ${tagClass(data.color)}" style="margin-bottom:14px;display:inline-block">${data.type}</span>
+    <p style="font-size:0.82rem;color:var(--text-secondary);line-height:1.65;margin-bottom:14px">${data.description}</p>
+    <div class="popover-divider"></div>
+    ${compHtml}
+    ${apiHtml ? '<div class="popover-divider"></div>' + apiHtml : ''}
+    ${tagHtml ? '<div class="popover-divider"></div>' + tagHtml : ''}
+  `;
+
+  document.getElementById('popoverOverlay').classList.add('show');
+}
+
+function closePopover(e) {
+  if (e.target === document.getElementById('popoverOverlay')) {
+    document.getElementById('popoverOverlay').classList.remove('show');
+  }
+}
+
+function closePopoverBtn() {
+  document.getElementById('popoverOverlay').classList.remove('show');
+}
+
+// Close on Escape
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    document.getElementById('popoverOverlay').classList.remove('show');
+  }
+});
+
+// ─── STAGGER HIGHLIGHT on hover ───────────────────────────────────────────────
+document.querySelectorAll('.flow-node').forEach(node => {
+  node.addEventListener('mouseenter', function() {
+    this.classList.add('glow-pulse');
+  });
+  node.addEventListener('mouseleave', function() {
+    this.classList.remove('glow-pulse');
+  });
+});
+
+// ─── SCROLL UTILITIES ────────────────────────────────────────────────────────
+function scrollTop() {
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function scrollToLane(role) {
+  const lanes = document.querySelectorAll('.lane-body');
+  const headers = document.querySelectorAll('.lane-label');
+  const roleMap = { student: 0, faculty: 1, admin: 2 };
+  const idx = roleMap[role];
+  if (headers[idx]) {
+    headers[idx].scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+}
+
+function scrollToServices() {
+  const s = document.querySelector('.services-section');
+  if (s) s.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+// ─── FLOATING PARTICLES ──────────────────────────────────────────────────────
+function createParticle() {
+  const colors = ['#6366f1', '#f59e0b', '#ec4899', '#0ea5e9', '#10b981', '#8b5cf6'];
+  const p = document.createElement('div');
+  p.className = 'particle';
+  p.style.left = Math.random() * 100 + 'vw';
+  p.style.background = colors[Math.floor(Math.random() * colors.length)];
+  const dur = 6 + Math.random() * 10;
+  const delay = Math.random() * 8;
+  p.style.animationDuration = dur + 's';
+  p.style.animationDelay = delay + 's';
+  p.style.width = p.style.height = (2 + Math.random() * 3) + 'px';
+  document.body.appendChild(p);
+  setTimeout(() => p.remove(), (dur + delay) * 1000);
+}
+
+// Create initial batch of particles
+for (let i = 0; i < 12; i++) createParticle();
+// Continuously spawn new particles
+setInterval(createParticle, 1200);
+
+// ─── HINT CHIP AUTO-HIDE ────────────────────────────────────────────────────
+setTimeout(() => {
+  const chip = document.getElementById('hintChip');
+  if (chip) {
+    chip.style.transition = 'opacity 0.5s ease';
+    chip.style.opacity = '0';
+    setTimeout(() => chip.style.display = 'none', 500);
+  }
+}, 6000);
+
+// ─── NODE CLICK RIPPLE ──────────────────────────────────────────────────────
+document.querySelectorAll('.flow-node').forEach(node => {
+  node.addEventListener('click', function(e) {
+    const ripple = document.createElement('span');
+    const rect = this.getBoundingClientRect();
+    const size = Math.max(rect.width, rect.height);
+    ripple.style.cssText = `
+      position:absolute;
+      width:${size}px; height:${size}px;
+      border-radius:50%;
+      background: rgba(255,255,255,0.12);
+      transform: scale(0);
+      animation: rippleAnim 0.4s ease-out forwards;
+      top:${e.clientY - rect.top - size/2}px;
+      left:${e.clientX - rect.left - size/2}px;
+      pointer-events:none; z-index:10;
+    `;
+    this.style.overflow = 'hidden';
+    this.appendChild(ripple);
+    setTimeout(() => ripple.remove(), 400);
+  });
+});
+
+// Add ripple keyframes dynamically
+const style = document.createElement('style');
+style.textContent = `
+  @keyframes rippleAnim {
+    from { transform: scale(0); opacity: 1; }
+    to   { transform: scale(2.5); opacity: 0; }
+  }
+`;
+document.head.appendChild(style);
+</script>
+</body>
+</html>

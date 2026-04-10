@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Records & Reports</title>
+    <link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+    <header class="main-header"><div class="container"><div class="header-content"><div class="logo-section"><img src="images/charusat-logo.png" class="logo-img"><div class="college-info"><h1>CHARUSAT Portal</h1></div></div></div></div></header>
+    <main class="container mt-2">
+        <h3>Records & Reports</h3>
+        <div class="form-row">
+            <div class="form-group" style="max-width:320px;">
+                <label>Search by student email</label>
+                <input id="searchEmail" type="email" placeholder="24it068@charusat.edu.in">
+            </div>
+            <div class="form-group mt-2"><button id="searchBtn" class="btn btn-primary">Search</button> <button id="exportBtn" class="btn btn-secondary">Export All CSV</button></div>
+        </div>
+        <div id="reportList" class="mt-2"></div>
+    </main>
+
+    <script src="js/main.js"></script>
+    <script src="js/crud.js"></script>
+    <script>
+        function renderResults(filter){ const apps = JSON.parse(localStorage.getItem('applications') || '[]').filter(filter); const el = document.getElementById('reportList'); if (apps.length === 0) el.innerHTML = '<p class="muted">No records found.</p>'; else { let html = '<table class="apps-table"><thead><tr><th>ID</th><th>Type</th><th>Student</th><th>Status</th><th>Submitted</th></tr></thead><tbody>'; apps.forEach(a => html += `<tr><td>${a.id}</td><td>${a.type}</td><td>${a.studentName}<br><small>${a.studentEmail}</small></td><td>${a.status}</td><td>${new Date(a.submittedAt).toLocaleString()}</td></tr>`); html += '</tbody></table>'; el.innerHTML = html; }}
+        document.getElementById('searchBtn').addEventListener('click', function(){ const email = document.getElementById('searchEmail').value.trim(); if (!email) return renderResults(() => true); renderResults(a => a.studentEmail === email); });
+        document.getElementById('exportBtn').addEventListener('click', function(){ portalCRUD.exportApplicationsCSV(); });
+        document.addEventListener('DOMContentLoaded', function(){ const user = portalUtils.getCurrentUser(); if (!user || user.role !== 'admin') { window.location.href = 'access-denied.html'; return; } renderResults(() => true); });
+    </script>
+</body>
+</html>

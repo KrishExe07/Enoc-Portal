@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>College e-NOC & Internship System</title>
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/login.css">
+    <link rel="stylesheet" href="css/home.css">
+    <link rel="stylesheet" href="css/google-auth.css">
+</head>
+
+<body>
+    <!-- Header -->
+    <header class="main-header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo-section">
+                    <img src="images/charusat-logo.png" alt="CHARUSAT Logo" class="logo-img">
+                    <div class="college-info">
+                        <h1>CHAROTAR UNIVERSITY SCIENCE & TECHNOLOGY</h1>
+                        <p class="tagline">Excellence in Education & Innovation</p>
+                    </div>
+                </div>
+                <nav class="main-nav">
+                    <ul>
+                        <li><a href="index.html" class="active">Home</a></li>
+                        <li><a href="about.html">About</a></li>
+                        <li><a href="contact.html">Contact</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="container">
+            <div class="hero-content reveal">
+                <h2>e-NOC Portal</h2>
+                <p>NOC & Internship Approval System</p>
+                <p class="hero-description">
+                    A secure academic platform for managing student NOC and internship approval requests.</p>
+            </div>
+
+            <div class="parallax" aria-hidden="true">
+                <div class="parallax-layer" data-depth="0.12"
+                    style="right:-40px;top:-20px;width:220px;height:220px;background:radial-gradient(circle at 30% 30%, rgba(14,165,233,0.14), transparent 30%), radial-gradient(circle at 70% 70%, rgba(59,130,246,0.10), transparent 30%);border-radius:50%;">
+                </div>
+                <div class="parallax-layer" data-depth="0.06"
+                    style="left:-60px;bottom:-20px;width:300px;height:160px;background:linear-gradient(90deg,rgba(14,165,233,0.08),rgba(59,130,246,0.06));border-radius:24px;">
+                </div>
+                <svg class="parallax-layer" data-depth="0.03" width="220" height="220" viewBox="0 0 200 200"
+                    style="position:absolute;right:10px;top:60px;opacity:0.08">
+                    <defs>
+                        <linearGradient id="g1">
+                            <stop offset="0" stop-color="#3b82f6" />
+                            <stop offset="1" stop-color="#0ea5e9" />
+                        </linearGradient>
+                    </defs>
+                    <path fill="url(#g1)"
+                        d="M43.2,-64.5C54.5,-54,62.8,-43.2,67.8,-30.1C72.8,-17,74.5,-1.6,70,11.8C65.4,25.2,54.6,36.7,42.7,44.7C30.8,52.8,15.4,57.4,1.1,55.6C-13.3,53.9,-26.6,45.9,-40.2,36C-53.7,26.1,-67.6,14.1,-70.4,-0.3C-73.1,-14.8,-64.8,-31.7,-52.5,-42.8C-40.3,-54,-24.1,-59.4,-7.7,-58.4C8.7,-57.3,17.4,-49.7,43.2,-64.5Z"
+                        transform="translate(100 100)" />
+                </svg>
+            </div>
+
+            <div class="hero-decor" aria-hidden="true"></div>
+        </div>
+    </section>
+
+    <!-- Login Section -->
+    <section class="login-section">
+        <div class="container">
+            <div class="login-container">
+                <div class="login-header">
+                    <h2>Sign in to e-NOC Portal</h2>
+                    <p>Students use Google Sign-In &bull; Faculty &amp; Admin use direct login</p>
+                </div>
+
+                <!-- Login Tab Switcher -->
+                <div class="login-tabs" id="loginTabs">
+                    <button class="login-tab active" id="tabStudent" onclick="switchLoginTab('student')">🎓
+                        Student</button>
+                    <button class="login-tab" id="tabStaff" onclick="switchLoginTab('staff')">👨‍🏫 Faculty /
+                        Admin</button>
+                </div>
+
+                <!-- Student Login Panel (Google) -->
+                <div id="panelStudent" class="login-panel">
+                    <div class="google-auth-info">
+                        <h4>🔐 Student Sign-In</h4>
+                        <ul>
+                            <li>Use your official <strong>.edu</strong> college email</li>
+                            <li>Your identity is verified securely via Google</li>
+                        </ul>
+                    </div>
+                    <div class="role-selection-container" style="justify-content:center;">
+                        <div class="role-card">
+                            <div class="role-icon">🎓</div>
+                            <h3>Student</h3>
+                            <p class="role-description">Submit NOC requests for internships</p>
+                            <span class="domain-requirement">Requires .edu email</span>
+                            <div class="google-signin-container">
+                                <div id="google-signin-student"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="text-align:center;">
+                        <div class="security-badge">Secured by Google OAuth 2.0</div>
+                    </div>
+                </div>
+
+                <!-- Staff Login Panel (Direct) -->
+                <div id="panelStaff" class="login-panel" style="display:none;">
+                    <div class="google-auth-info"
+                        style="background:linear-gradient(135deg,rgba(59,130,246,0.08),rgba(14,165,233,0.06));border-color:rgba(59,130,246,0.3);">
+                        <h4>🔐 Faculty & Admin Sign-In</h4>
+                        <ul>
+                            <li>Use your institutional <strong>.ac.in</strong> email and password</li>
+                            <li>Your credentials are securely verified by the server</li>
+                        </ul>
+                    </div>
+
+                    <form id="staffLoginForm" class="staff-login-form" onsubmit="handleStaffLogin(event)">
+                        <div class="form-group">
+                            <label for="staffRole">Select Role</label>
+                            <select id="staffRole" class="form-control" required>
+                                <option value="">-- Choose Role --</option>
+                                <option value="faculty">👨‍🏫 Faculty</option>
+                                <option value="admin">⚙️ Administrator</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="staffEmail">Institutional Email (.ac.in)</label>
+                            <input type="email" id="staffEmail" class="form-control"
+                                placeholder="e.g. faculty@charusat.ac.in" required autocomplete="email">
+                        </div>
+                        <div class="form-group">
+                            <label for="staffPassword">Password</label>
+                            <div style="position:relative;">
+                                <input type="password" id="staffPassword" class="form-control"
+                                    placeholder="Enter your password" required autocomplete="current-password">
+                                <button type="button" class="pwd-toggle" onclick="togglePasswordVisibility()"
+                                    title="Show/hide password">👁</button>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-block" id="staffLoginBtn">
+                            🔓 Sign In
+                        </button>
+                        <p class="staff-login-hint">🔒 Secure server-side authentication</p>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Demo Credentials removed for production -->
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features-section">
+        <div class="container">
+            <h3 class="section-title">System Features</h3>
+            <div class="features-grid">
+                <div class="feature-item tilt reveal">
+                    <a class="feature-link" href="about.html">
+                        <div class="feature-icon">🚀</div>
+                        <h4>Fast Processing</h4>
+                        <p>Quick approval workflow with real-time notifications</p>
+                    </a>
+                </div>
+                <div class="feature-item tilt reveal">
+                    <a class="feature-link" href="about.html">
+                        <div class="feature-icon">🔒</div>
+                        <h4>Secure System</h4>
+                        <p>Role-based access control and data encryption</p>
+                    </a>
+                </div>
+                <div class="feature-item tilt reveal">
+                    <a class="feature-link" href="index.html">
+                        <div class="feature-icon">📱</div>
+                        <h4>Mobile Friendly</h4>
+                        <p>Access from any device, anywhere, anytime</p>
+                    </a>
+                </div>
+                <div class="feature-item tilt reveal">
+                    <a class="feature-link" href="application-status.html">
+                        <div class="feature-icon">📈</div>
+                        <h4>Track Progress</h4>
+                        <p>Monitor application status at every stage</p>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="main-footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="index.html">Student Portal</a></li>
+                        <li><a href="index.html">Faculty Portal</a></li>
+                        <li><a href="about.html" target="_blank">Downloads</a></li>
+                        <li><a href="contact.html">Help Center</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Support</h4>
+                    <ul>
+                        <li><a href="about.html" target="_blank">User Guide</a></li>
+                        <li><a href="contact.html#faqs">FAQs</a></li>
+                        <li><a href="contact.html">Technical Support</a></li>
+                        <li><a href="contact.html#contactForm">Feedback</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Contact</h4>
+                    <p>CHARUSAT</p>
+                    <p>Email: <a href="mailto:info@charusat.edu.in">info@charusat.edu.in</a></p>
+                    <p>Phone: +91 (2692) 123456 (demo)</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 Charotar University of Science &amp; Technology. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Google Sign-In Script -->
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+
+    <script src="js/config.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/api-service.js"></script>
+    <script src="js/google-auth.js"></script>
+    <script src="js/home.js"></script>
+
+    <script>
+        // ── Tab Switcher ──────────────────────────────────────────────────────
+        function switchLoginTab(tab) {
+            const isStudent = tab === 'student';
+            document.getElementById('panelStudent').style.display = isStudent ? '' : 'none';
+            document.getElementById('panelStaff').style.display = isStudent ? 'none' : '';
+            document.getElementById('tabStudent').classList.toggle('active', isStudent);
+            document.getElementById('tabStaff').classList.toggle('active', !isStudent);
+        }
+
+        // ── Password visibility toggle (FIXED: was getElnpementById) ─────────
+        function togglePasswordVisibility() {
+            const pwd = document.getElementById('staffPassword');
+            if (pwd) {
+                pwd.type = pwd.type === 'password' ? 'text' : 'password';
+            }
+        }
+
+        // ── Direct Staff Login (now calls backend API) ────────────────────────
+        async function handleStaffLogin(event) {
+            event.preventDefault();
+            const role = document.getElementById('staffRole').value;
+            const email = document.getElementById('staffEmail').value.trim().toLowerCase();
+            const password = document.getElementById('staffPassword').value;
+            const btn = document.getElementById('staffLoginBtn');
+
+            if (!role) {
+                portalUtils.showNotification('Please select a role.', 'warning');
+                return;
+            }
+
+            // Validate email ends with .ac.in
+            if (!email.endsWith('.ac.in')) {
+                portalUtils.showNotification('Please use an institutional .ac.in email address.', 'error');
+                return;
+            }
+
+            if (!password) {
+                portalUtils.showNotification('Please enter your password.', 'error');
+                return;
+            }
+
+            // Show loading state
+            btn.disabled = true;
+            btn.textContent = '🔄 Signing in…';
+
+            try {
+                // Call backend API for authentication
+                const result = await apiService.staffLogin(email, password, role);
+
+                if (result.success) {
+                    // Save user data to localStorage
+                    const user = {
+                        id: result.user.id,
+                        name: result.user.name,
+                        email: result.user.email,
+                        role: result.user.role,
+                        profilePicture: result.user.profilePicture || null,
+                        login_provider: 'local',
+                        email_verified: true,
+                        department: result.user.department || null,
+                        designation: result.user.designation || null,
+                        last_login: new Date().toISOString()
+                    };
+                    portalUtils.saveToStorage('currentUser', user);
+                    portalUtils.showNotification('✅ Login successful! Redirecting…', 'success');
+
+                    setTimeout(function () {
+                        window.location.href = role === 'faculty' ? 'faculty-dashboard.html' : 'admin-dashboard.html';
+                    }, 1000);
+                } else {
+                    portalUtils.showNotification(result.message || '❌ Login failed. Please check your credentials.', 'error');
+                    btn.disabled = false;
+                    btn.textContent = '🔓 Sign In';
+                }
+            } catch (error) {
+                console.error('Login error:', error);
+                portalUtils.showNotification('❌ Connection error. Please make sure the backend is running.', 'error');
+                btn.disabled = false;
+                btn.textContent = '🔓 Sign In';
+            }
+        }
+
+        // ── Google Sign-In (Students only) ────────────────────────────────────
+        window.addEventListener('load', async function () {
+            console.log('🔄 Waiting for backend server to be ready...');
+            
+            // Wait for Google Identity Services to load
+            const checkGoogleLoaded = setInterval(function () {
+                if (typeof google !== 'undefined') {
+                    clearInterval(checkGoogleLoaded);
+                    googleAuth.init();
+                    googleAuth.renderSignInButton('google-signin-student', 'student');
+                    console.log('✅ Google Sign-In initialized successfully');
+                }   
+            }, 100);
+
+            // Timeout for Google services (FIXED: containers → proper element reference)
+            setTimeout(function () {
+                clearInterval(checkGoogleLoaded);
+                if (typeof google === 'undefined') {
+                    console.error('❌ Google Identity Services failed to load');
+                    const container = document.getElementById('google-signin-student');
+                    if (container) {
+                        container.innerHTML = '<p style="color:var(--danger-color);font-size:0.9rem;">❌ Google Sign-In failed to load. Please check your internet connection and refresh.</p>';
+                    }
+                }
+            }, 10000);
+        });
+    </script>
+</body>
+
+</html>

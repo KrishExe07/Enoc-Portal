@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Faculty NOC Review | e-Governance Portal</title>
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="stylesheet" href="css/forms.css">
+</head>
+
+<body>
+    <!-- Header -->
+    <header class="dashboard-header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo-section">
+                    <img src="images/charusat-logo.png" alt="CHARUSAT Logo" class="logo-img">
+                    <h2>Faculty NOC Review Panel</h2>
+                </div>
+                <div class="user-section">
+                    <div class="user-info">
+                        <span class="user-name" id="userName">Faculty</span>
+                        <span class="user-role">Faculty</span>
+                    </div>
+                    <button class="btn btn-primary" onclick="window.location.href='faculty-dashboard.html'" style="margin-right: 10px;">
+                        🏠 Dashboard
+                    </button>
+                    <button class="btn btn-secondary" onclick="window.location.href='index.html'">Logout</button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="dashboard-container">
+        <div class="container">
+            <div class="content-wrapper">
+                <!-- Page Header -->
+                <div class="page-header">
+                    <h3>📋 Pending NOC Requests</h3>
+                    <p>Review and approve/reject student NOC applications. Students can download PDF only after you approve.</p>
+                </div>
+
+                <!-- Live Stats Bar -->
+                <div id="nocStatsBar" class="stats-bar">
+                    <span class="stat-chip" style="color:#64748b;">Loading stats...</span>
+                </div>
+
+                <div class="review-layout">
+                    <section class="review-main">
+                        <!-- Filter Section -->
+                        <div class="filter-section">
+                            <select id="statusFilter" class="form-control">
+                                <option value="">All Status</option>
+                                <option value="submitted" selected>Submitted (Pending)</option>
+                                <option value="under_review">Under Review</option>
+                                <option value="approved">Approved</option>
+                                <option value="rejected">Rejected</option>
+                            </select>
+                            <button class="btn btn-primary" onclick="loadNOCRequests()">🔄 Refresh</button>
+                        </div>
+
+                        <!-- NOC Requests Container -->
+                        <div id="nocRequestsContainer" class="noc-requests-grid">
+                            <p class="text-center">Loading...</p>
+                        </div>
+                    </section>
+
+                    <aside class="review-aside">
+                        <div class="how-it-works">
+                            <h4>💡 How This Works</h4>
+                            <ul>
+                                <li>Students submit NOC requests → Status: <strong>Pending</strong></li>
+                                <li>You can <strong>Approve</strong> or <strong>Reject</strong> each request</li>
+                                <li>After approval → Student can <strong>Download PDF</strong></li>
+                                <li>If rejected → Student sees your <strong>rejection reason</strong></li>
+                            </ul>
+                        </div>
+                    </aside>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- NOC Details Modal -->
+    <div id="nocDetailsModal" class="modal" style="display: none;">
+        <div class="modal-content large">
+            <div class="modal-header">
+                <h4>NOC Request Details</h4>
+                <button class="modal-close" onclick="closeModal()">&times;</button>
+            </div>
+            <div class="modal-body" id="nocDetailsBody">
+                <!-- Details will be populated here -->
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal()">Close</button>
+                <button class="btn btn-danger" id="rejectBtn" onclick="showRejectForm()">Reject</button>
+                <button class="btn btn-success" id="approveBtn" onclick="approveNOC()">Approve</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Signature Modal -->
+    <div id="signatureModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4>Add Your Signature</h4>
+                <button class="modal-close" onclick="closeSignatureModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="signature-options">
+                    <button class="btn btn-primary" onclick="showUploadSignature()">Upload Signature</button>
+                    <button class="btn btn-secondary" onclick="showDrawSignature()">Draw Signature</button>
+                </div>
+
+                <!-- Upload Signature -->
+                <div id="uploadSignatureSection" style="display: none;">
+                    <input type="file" id="signatureFile" accept="image/png,image/jpeg">
+                    <div id="signaturePreview"></div>
+                </div>
+
+                <!-- Draw Signature -->
+                <div id="drawSignatureSection" style="display: none;">
+                    <canvas id="signatureCanvas" width="400" height="200" style="border: 1px solid #ccc;"></canvas>
+                    <button class="btn btn-secondary" onclick="clearCanvas()">Clear</button>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeSignatureModal()">Cancel</button>
+                <button class="btn btn-success" onclick="saveSignature()">Save & Sign NOC</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Approve Modal (with optional comments) -->
+    <div id="approveModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header" style="background: linear-gradient(135deg,#16a34a,#22c55e); color:#fff;">
+                <h4>✅ Approve NOC Request</h4>
+                <button class="modal-close" onclick="closeApproveModal()" style="color:#fff;">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="approvalComments">Approval Comments <span style="color:#64748b;font-weight:normal;">(optional)</span></label>
+                    <textarea id="approvalComments" rows="4" class="form-control"
+                        placeholder="Add any comments or instructions for the student (optional)..."></textarea>
+                    <small style="color: #64748b;">These comments will be visible to the student and included in the notification email.</small>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeApproveModal()">Cancel</button>
+                <button class="btn btn-success" onclick="confirmApproveNOC()">✅ Confirm Approval</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Rejection Modal -->
+    <div id="rejectModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4>Reject NOC Request</h4>
+                <button class="modal-close" onclick="closeRejectModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="rejectionReason">Rejection Reason <span style="color: red;">*</span></label>
+                    <textarea id="rejectionReason" rows="5" class="form-control" 
+                        placeholder="Please provide a detailed reason for rejecting this NOC request..." required></textarea>
+                    <small style="color: #64748b;">This reason will be visible to the student.</small>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeRejectModal()">Cancel</button>
+                <button class="btn btn-danger" onclick="confirmRejectNOC()">Confirm Rejection</button>
+            </div>
+        </div>
+    </div>
+
+    <style>
+    .dashboard-container {
+        display: block;
+        min-height: calc(100vh - 90px);
+        padding: 1.75rem 0 2rem;
+        background: linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
+    }
+
+    .content-wrapper {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 16px;
+        padding: 1.5rem;
+        box-shadow: 0 12px 26px rgba(15, 23, 42, 0.08);
+    }
+
+    .page-header {
+        margin-bottom: 1rem;
+    }
+
+    .page-header h3 {
+        margin: 0;
+        font-size: 1.4rem;
+        color: #0f172a;
+    }
+
+    .page-header p {
+        margin: 0.45rem 0 0;
+        color: #475569;
+    }
+
+    .stats-bar {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+        margin-bottom: 1.25rem;
+    }
+
+    .review-layout {
+        display: grid;
+        grid-template-columns: minmax(0, 2fr) minmax(260px, 1fr);
+        gap: 1.25rem;
+        align-items: start;
+    }
+
+    .review-main {
+        min-width: 0;
+    }
+
+    .review-aside {
+        position: sticky;
+        top: 96px;
+    }
+
+    .how-it-works {
+        background: linear-gradient(180deg, #eff6ff 0%, #f8fbff 100%);
+        border: 1px solid #bfdbfe;
+        border-left: 4px solid #2563eb;
+        border-radius: 12px;
+        padding: 1rem;
+    }
+
+    .how-it-works h4 {
+        margin: 0 0 0.75rem;
+        color: #1e40af;
+    }
+
+    .how-it-works ul {
+        margin: 0;
+        padding-left: 1.1rem;
+        color: #1e3a8a;
+        display: grid;
+        gap: 0.55rem;
+    }
+
+    .filter-section {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        margin-bottom: 1rem;
+        flex-wrap: wrap;
+        padding: 0.75rem;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        background: #f8fafc;
+    }
+
+    .filter-section .form-control {
+        min-width: 230px;
+        border-radius: 10px;
+    }
+
+    .noc-requests-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 1rem;
+    }
+
+    .noc-card {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 14px;
+        box-shadow: 0 4px 16px rgba(15, 23, 42, 0.06);
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .noc-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 24px rgba(15, 23, 42, 0.12);
+    }
+
+    .noc-card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 1rem 1rem 0.75rem;
+        border-bottom: 1px solid #f1f5f9;
+    }
+
+    .noc-card-header h4 {
+        margin: 0;
+        color: #0f172a;
+        font-size: 1rem;
+    }
+
+    .noc-card-body {
+        padding: 0.85rem 1rem;
+        display: grid;
+        gap: 0.35rem;
+        color: #334155;
+    }
+
+    .noc-card-body p {
+        margin: 0;
+        font-size: 0.92rem;
+    }
+
+    .noc-card-footer {
+        padding: 0.85rem 1rem 1rem;
+        border-top: 1px solid #f1f5f9;
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+    }
+
+    .stat-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        padding: 0.4rem 0.9rem;
+        border-radius: 999px;
+        font-size: 0.875rem;
+        font-weight: 500;
+        background: #f1f5f9;
+        border: 1px solid #e2e8f0;
+        color: #334155;
+    }
+    .stat-chip.stat-pending  { background:#fef9c3; border-color:#fbbf24; color:#92400e; }
+    .stat-chip.stat-approved { background:#dcfce7; border-color:#16a34a; color:#14532d; }
+    .stat-chip.stat-rejected { background:#fee2e2; border-color:#ef4444; color:#7f1d1d; }
+    .stat-chip.stat-total    { background:#e0f2fe; border-color:#0ea5e9; color:#0c4a6e; }
+    .stat-chip.stat-companies{ background:#f3e8ff; border-color:#a855f7; color:#581c87; }
+
+    .badge {
+        display: inline-flex;
+        align-items: center;
+        border-radius: 999px;
+        font-size: 0.75rem;
+        font-weight: 700;
+        padding: 0.25rem 0.6rem;
+        border: 1px solid transparent;
+    }
+
+    .badge-info {
+        color: #1d4ed8;
+        background: #eff6ff;
+        border-color: #bfdbfe;
+    }
+
+    .badge-warning {
+        color: #92400e;
+        background: #fffbeb;
+        border-color: #fde68a;
+    }
+
+    .badge-success {
+        color: #166534;
+        background: #f0fdf4;
+        border-color: #86efac;
+    }
+
+    .badge-danger {
+        color: #991b1b;
+        background: #fef2f2;
+        border-color: #fca5a5;
+    }
+
+    .badge-secondary {
+        color: #475569;
+        background: #f8fafc;
+        border-color: #cbd5e1;
+    }
+
+    @media (max-width: 980px) {
+        .review-layout {
+            grid-template-columns: 1fr;
+        }
+
+        .review-aside {
+            position: static;
+        }
+    }
+
+    @media (max-width: 640px) {
+        .content-wrapper {
+            padding: 1rem;
+            border-radius: 12px;
+        }
+
+        .filter-section {
+            align-items: stretch;
+        }
+
+        .filter-section .form-control,
+        .filter-section .btn {
+            width: 100%;
+        }
+
+        .noc-requests-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+    </style>
+
+    <script src="js/config.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/api-service.js"></script>
+    <script src="js/faculty-noc.js"></script>
+</body>
+
+</html>

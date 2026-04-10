@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Dashboard — eNOC Portal</title>
+    <link rel="stylesheet" href="css/admin-dashboard.css" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+
+    <!-- ═══════════════════════════════════════════════════════════
+     HEADER
+═══════════════════════════════════════════════════════════ -->
+    <header class="adm-header">
+        <div class="brand">
+            <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Toggle Menu" style="background:transparent;border:none;color:#fff;font-size:1.5rem;cursor:pointer;padding:.5rem;display:none;">☰</button>
+            <img src="images/logo.png" alt="CHARUSAT" onerror="this.style.display='none'">
+            <div class="brand-text">
+                <h2>eNOC Portal</h2>
+                <span>Administrator Dashboard</span>
+            </div>
+        </div>
+        <div class="header-right">
+            <button class="notif-btn" onclick="AdmDash.showSection('notifications')" title="Notifications">
+                🔔
+                <span class="notif-badge" id="notifCount">0</span>
+            </button>
+            <button class="notif-btn" onclick="AdmDash.showSection('auditlog')" title="Audit Log">📋</button>
+            <div class="user-pill" id="userPill" onclick="AdmDash.toggleUserMenu()">
+                <div class="user-avatar" id="userAvatarHeader">A</div>
+                <div>
+                    <span class="user-pill-name" id="userNameHeader">Admin</span>
+                    <span class="user-pill-role">Administrator</span>
+                </div>
+                <div class="user-dropdown" id="userDropdown">
+                    <a href="#" onclick="AdmDash.showSection('profile');return false;">👤 My Profile</a>
+                    <a href="#" onclick="AdmDash.showSection('auditlog');return false;">📋 Audit Log</a>
+                    <hr style="margin:.25rem 0;border:none;border-top:1px solid #f1f5f9;">
+                    <button class="logout-btn" onclick="AdmDash.logout()">🚪 Sign Out</button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- ═══════════════════════════════════════════════════════════
+     LAYOUT
+═══════════════════════════════════════════════════════════ -->
+    <div class="adm-layout">
+        <!-- Mobile Overlay -->
+        <div class="sidebar-overlay" id="sidebarOverlay" style="display:none;position:fixed;top:var(--fac-header-h, 70px);left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);z-index:999;"></div>
+
+        <!-- SIDEBAR -->
+        <aside class="adm-sidebar" id="admSidebar">
+            <div class="sidebar-profile">
+                <div class="sidebar-avatar" id="sidebarAvatar">A</div>
+                <h4 id="sidebarName">Administrator</h4>
+                <p id="sidebarEmail">admin@charusat.ac.in</p>
+                <span class="role-chip">⚙️ Admin</span>
+            </div>
+
+            <nav class="sidebar-nav">
+                <ul>
+                    <li>
+                        <a href="#" class="active" data-section="overview"
+                            onclick="AdmDash.showSection('overview');return false;">
+                            <span class="nav-icon">🏠</span> Overview
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" data-section="companies" onclick="AdmDash.showSection('companies');return false;">
+                            <span class="nav-icon">🏢</span> Manage Companies
+                            <span class="nav-badge" id="pendingCompaniesBadge" style="display:none;">0</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" data-section="applications"
+                            onclick="AdmDash.showSection('applications');return false;">
+                            <span class="nav-icon">📄</span> All Applications
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" data-section="users" onclick="AdmDash.showSection('users');return false;">
+                            <span class="nav-icon">👥</span> User Management
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" data-section="auditlog" onclick="AdmDash.showSection('auditlog');return false;">
+                            <span class="nav-icon">📋</span> Audit Log
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" data-section="profile" onclick="AdmDash.showSection('profile');return false;">
+                            <span class="nav-icon">👤</span> Profile
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" data-section="notifications"
+                            onclick="AdmDash.showSection('notifications');return false;">
+                            <span class="nav-icon">🔔</span> Notifications
+                            <span class="nav-badge" id="notifBadge">0</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+
+            <div class="sidebar-footer">
+                <p>eNOC Portal v2.0 · Admin</p>
+            </div>
+        </aside>
+
+        <!-- MAIN -->
+        <main class="adm-main">
+
+            <!-- ── OVERVIEW ─────────────────────────────────────────── -->
+            <section class="section-page active" id="sec-overview">
+                <div class="page-header">
+                    <div>
+                        <h2>👋 Welcome, <span id="welcomeName">Admin</span></h2>
+                        <p>System overview and management controls.</p>
+                    </div>
+                    <button class="btn btn-primary" onclick="AdmDash.showSection('companies')">
+                        🏢 Manage Companies
+                    </button>
+                </div>
+
+                <!-- Permission Notice -->
+                <div class="permission-notice">
+                    <div class="pn-icon">⚠️</div>
+                    <div>
+                        <h4>Administrator Role — Limited Approval Authority</h4>
+                        <p>You can manage companies, applications, and users. <strong>Only Faculty members can
+                                approve/reject NOC requests and apply e-signatures.</strong></p>
+                    </div>
+                </div>
+
+                <div class="stats-row">
+                    <div class="stat-card">
+                        <div class="stat-icon purple">🏢</div>
+                        <div class="stat-info">
+                            <div class="stat-num" id="statCompanies">—</div>
+                            <div class="stat-lbl">Approved Companies</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon amber">⏳</div>
+                        <div class="stat-info">
+                            <div class="stat-num" id="statPendingCo">—</div>
+                            <div class="stat-lbl">Pending Companies</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon blue">📄</div>
+                        <div class="stat-info">
+                            <div class="stat-num" id="statApplications">—</div>
+                            <div class="stat-lbl">Total Applications</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon green">✅</div>
+                        <div class="stat-info">
+                            <div class="stat-num" id="statApproved">—</div>
+                            <div class="stat-lbl">Approved NOCs</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Analytics Charts -->
+                <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(400px,1fr));gap:1.5rem;margin-bottom:2rem;" class="charts-row">
+                    <div class="card" style="padding:1.5rem;">
+                        <h3 style="font-size:1.1rem;color:#1e293b;margin-bottom:1rem;">NOC Processing Pipeline</h3>
+                        <div style="position:relative;height:300px;width:100%;">
+                            <canvas id="pipelineChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="card" style="padding:1.5rem;">
+                        <h3 style="font-size:1.1rem;color:#1e293b;margin-bottom:1rem;">Applications by Department</h3>
+                        <div style="position:relative;height:300px;width:100%;display:flex;justify-content:center;">
+                            <canvas id="departmentChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3>⚡ Quick Actions</h3>
+                    </div>
+                    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;">
+                        <button class="btn btn-primary" onclick="AdmDash.openAddCompanyModal()">➕ Add Company</button>
+                        <button class="btn btn-outline" onclick="AdmDash.showSection('applications')">📄 View All
+                            Applications</button>
+                        <button class="btn btn-outline" onclick="AdmDash.showSection('users')">👥 Manage Users</button>
+                        <button class="btn btn-outline" onclick="AdmDash.showSection('auditlog')">📋 View Audit
+                            Log</button>
+                    </div>
+                </div>
+
+                <!-- Recent Audit -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3>🕐 Recent Activity</h3>
+                        <button class="btn btn-secondary btn-sm" onclick="AdmDash.loadAuditLog()">Refresh</button>
+                    </div>
+                    <ul class="audit-list" id="overviewAuditList">
+                        <li class="loading-state">
+                            <div class="spinner"></div> Loading…
+                        </li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- ── MANAGE COMPANIES ───────────────────────────────────── -->
+            <section class="section-page" id="sec-companies">
+                <div class="page-header">
+                    <div>
+                        <h2>🏢 Manage Companies</h2>
+                        <p>Add, edit, approve, or remove companies from the portal.</p>
+                    </div>
+                    <button class="btn btn-primary" onclick="AdmDash.openAddCompanyModal()">➕ Add Company</button>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3>📥 Upload Company List</h3>
+                    </div>
+                    <p style="font-size:.9rem;color:#64748b;margin-bottom:1rem;">Upload an Excel file with columns: SR. No, Company Name, Company Details, Technology, Paid Internship - Not allowed.</p>
+                    <input type="file" id="companyExcelFile" accept=".xlsx,.xls" style="display:none;">
+                    <div style="display:flex;gap:.75rem;align-items:center;flex-wrap:wrap;">
+                        <button class="btn btn-outline" onclick="AdmDash.uploadCompanyList()">📤 Upload Company List</button>
+                        <span id="companyUploadStatus" style="font-size:.85rem;color:#64748b;"></span>
+                    </div>
+                </div>
+
+                <!-- Pending Companies -->
+                <div class="card" id="pendingCompaniesCard">
+                    <div class="card-header">
+                        <h3>⏳ Pending Approval <span id="pendingCoCount" style="color:#f59e0b;"></span></h3>
+                    </div>
+                    <div id="pendingCompaniesList" class="company-grid">
+                        <div class="loading-state">
+                            <div class="spinner"></div> Loading…
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Approved Companies -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3>✅ Approved Companies</h3>
+                        <input type="text" id="companySearch" placeholder="🔍 Search companies…"
+                            oninput="AdmDash.filterCompanies()"
+                            style="padding:.45rem .75rem;border:1.5px solid #e2e8f0;border-radius:8px;font-size:.85rem;outline:none;">
+                    </div>
+                    <div id="approvedCompaniesList" class="company-grid">
+                        <div class="loading-state">
+                            <div class="spinner"></div> Loading…
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ── ALL APPLICATIONS ───────────────────────────────────── -->
+            <section class="section-page" id="sec-applications">
+                <div class="page-header">
+                    <div>
+                        <h2>📄 All Applications</h2>
+                        <p>View, edit, and delete NOC applications. <strong style="color:#f59e0b;">Note:
+                                Approval/rejection is Faculty-only.</strong></p>
+                    </div>
+                </div>
+
+                <div class="filter-bar">
+                    <select id="appFilterStatus" onchange="AdmDash.filterApplications()">
+                        <option value="">All Statuses</option>
+                        <option value="submitted">Submitted</option>
+                        <option value="under_review">Under Review</option>
+                        <option value="approved">Approved</option>
+                        <option value="rejected">Rejected</option>
+                        <option value="signed">Signed</option>
+                    </select>
+                    <input type="text" id="appFilterSearch" placeholder="🔍 Search student / company…"
+                        oninput="AdmDash.filterApplications()" style="min-width:220px;">
+                    <button class="refresh-btn" onclick="AdmDash.loadApplications()">↻ Refresh</button>
+                </div>
+
+                <div class="card">
+                    <div class="table-wrap">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>NOC ID</th>
+                                    <th>Student</th>
+                                    <th>Company</th>
+                                    <th>Semester</th>
+                                    <th>Duration</th>
+                                    <th>Status</th>
+                                    <th>Submitted</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="applicationsBody">
+                                <tr>
+                                    <td colspan="8">
+                                        <div class="loading-state">
+                                            <div class="spinner"></div> Loading…
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ── USER MANAGEMENT ────────────────────────────────────── -->
+            <section class="section-page" id="sec-users">
+                <div class="page-header">
+                    <div>
+                        <h2>👥 User Management</h2>
+                        <p>View all registered users and their roles.</p>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="table-wrap">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Role</th>
+                                    <th>Login Provider</th>
+                                    <th>Status</th>
+                                    <th>Joined</th>
+                                </tr>
+                            </thead>
+                            <tbody id="usersBody">
+                                <tr>
+                                    <td colspan="6">
+                                        <div class="loading-state">
+                                            <div class="spinner"></div> Loading…
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ── AUDIT LOG ──────────────────────────────────────────── -->
+            <section class="section-page" id="sec-auditlog">
+                <div class="page-header">
+                    <div>
+                        <h2>📋 Audit Log</h2>
+                        <p>Complete history of all system actions.</p>
+                    </div>
+                    <button class="btn btn-secondary btn-sm" onclick="AdmDash.loadAuditLog()">↻ Refresh</button>
+                </div>
+                <div class="card">
+                    <ul class="audit-list" id="fullAuditList">
+                        <li class="loading-state">
+                            <div class="spinner"></div> Loading…
+                        </li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- ── PROFILE ────────────────────────────────────────────── -->
+            <section class="section-page" id="sec-profile">
+                <div class="page-header">
+                    <div>
+                        <h2>👤 My Profile</h2>
+                        <p>View and update your administrator account information.</p>
+                    </div>
+                    <button class="btn btn-primary btn-sm" id="profileEditToggle" onclick="AdmDash.toggleProfileEdit()">
+                        ✏️ Edit Profile
+                    </button>
+                </div>
+
+                <div class="card" id="profileCard">
+                    <!-- Profile Header -->
+                    <div class="profile-header-section">
+                        <div class="sidebar-avatar profile-avatar-lg" id="profileAvatarLg"
+                            style="width:80px;height:80px;font-size:1.75rem;margin:0;">A</div>
+                        <div class="profile-header-info">
+                            <h3 id="profileName">—</h3>
+                            <p id="profileEmail" class="profile-email-display">—</p>
+                            <span class="role-chip">⚙️ Administrator</span>
+                        </div>
+                    </div>
+
+                    <!-- Profile View Mode -->
+                    <div id="profileViewMode">
+                        <div class="profile-grid">
+                            <div class="profile-field-card">
+                                <div class="profile-field-icon">🏛️</div>
+                                <div>
+                                    <label>Department</label>
+                                    <p id="profileDepartment">Not set</p>
+                                </div>
+                            </div>
+                            <div class="profile-field-card">
+                                <div class="profile-field-icon">🎖️</div>
+                                <div>
+                                    <label>Designation</label>
+                                    <p id="profileDesignation">Not set</p>
+                                </div>
+                            </div>
+                            <div class="profile-field-card">
+                                <div class="profile-field-icon">📱</div>
+                                <div>
+                                    <label>Mobile Number</label>
+                                    <p id="profileMobile">Not set</p>
+                                </div>
+                            </div>
+                            <div class="profile-field-card">
+                                <div class="profile-field-icon">🔑</div>
+                                <div>
+                                    <label>Login Provider</label>
+                                    <p id="profileProvider">—</p>
+                                </div>
+                            </div>
+                            <div class="profile-field-card">
+                                <div class="profile-field-icon">🕐</div>
+                                <div>
+                                    <label>Last Login</label>
+                                    <p id="profileLastLogin">—</p>
+                                </div>
+                            </div>
+                            <div class="profile-field-card">
+                                <div class="profile-field-icon">📊</div>
+                                <div>
+                                    <label>Managed Items</label>
+                                    <p id="profileManagedCount">0</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Profile Edit Mode (hidden by default) -->
+                    <div id="profileEditMode" style="display:none;">
+                        <form id="profileForm" onsubmit="AdmDash.saveProfile(event)">
+                            <div class="profile-edit-grid">
+                                <div class="form-group">
+                                    <label for="editDepartment">🏛️ Department</label>
+                                    <select id="editDepartment" class="form-control">
+                                        <option value="">Select Department</option>
+                                        <option value="Information Technology">Information Technology</option>
+                                        <option value="Computer Engineering">Computer Engineering</option>
+                                        <option value="Computer Science">Computer Science</option>
+                                        <option value="Electrical Engineering">Electrical Engineering</option>
+                                        <option value="Mechanical Engineering">Mechanical Engineering</option>
+                                        <option value="Civil Engineering">Civil Engineering</option>
+                                        <option value="Electronics & Communication">Electronics & Communication</option>
+                                        <option value="Administration">Administration</option>
+                                        <option value="Other">Other</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="editDesignation">🎖️ Designation</label>
+                                    <select id="editDesignation" class="form-control">
+                                        <option value="">Select Designation</option>
+                                        <option value="System Administrator">System Administrator</option>
+                                        <option value="Administrative Officer">Administrative Officer</option>
+                                        <option value="HOD">Head of Department (HOD)</option>
+                                        <option value="Dean">Dean</option>
+                                        <option value="Registrar">Registrar</option>
+                                        <option value="Director">Director</option>
+                                        <option value="Other">Other</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="editMobile">📱 Mobile Number</label>
+                                    <input type="tel" id="editMobile" class="form-control"
+                                        placeholder="e.g. 9876543210" maxlength="10"
+                                        pattern="[0-9]{10}" title="Enter a 10-digit mobile number">
+                                </div>
+                            </div>
+                            <div class="profile-edit-actions">
+                                <button type="button" class="btn btn-secondary" onclick="AdmDash.toggleProfileEdit()">
+                                    ✕ Cancel
+                                </button>
+                                <button type="submit" class="btn btn-success" id="profileSaveBtn">
+                                    💾 Save Changes
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Profile update status message -->
+                    <div id="profileStatus" class="profile-status" style="display:none;"></div>
+                </div>
+            </section>
+
+            <!-- ── NOTIFICATIONS ──────────────────────────────────────── -->
+            <section class="section-page" id="sec-notifications">
+                <div class="page-header">
+                    <div>
+                        <h2>🔔 Notifications</h2>
+                        <p>System alerts and recent activity updates.</p>
+                    </div>
+                    <div class="notif-header-actions">
+                        <span class="notif-summary" id="notifSummary">0 unread</span>
+                        <button class="btn btn-secondary btn-sm" onclick="AdmDash.clearNotifications()">
+                            ✓ Mark all read
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Notification Filter Tabs -->
+                <div class="notif-tabs" id="notifTabs">
+                    <button class="notif-tab active" data-filter="all" onclick="AdmDash.filterNotifications('all', this)">
+                        📋 All
+                    </button>
+                    <button class="notif-tab" data-filter="company" onclick="AdmDash.filterNotifications('company', this)">
+                        🏢 Companies
+                    </button>
+                    <button class="notif-tab" data-filter="application" onclick="AdmDash.filterNotifications('application', this)">
+                        📄 Applications
+                    </button>
+                    <button class="notif-tab" data-filter="system" onclick="AdmDash.filterNotifications('system', this)">
+                        ⚙️ System
+                    </button>
+                </div>
+
+                <ul class="notif-list" id="notifList">
+                    <li class="loading-state">
+                        <div class="spinner"></div> Loading…
+                    </li>
+                </ul>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════
+     MODAL: ADD / EDIT COMPANY
+═══════════════════════════════════════════════════════════ -->
+    <div class="modal-overlay" id="companyModal">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3 id="companyModalTitle">➕ Add Company</h3>
+                <button class="modal-close" onclick="AdmDash.closeModal('companyModal')">✕</button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="companyId">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Company Name <span style="color:#ef4444;">*</span></label>
+                        <input type="text" id="companyName" class="form-control" placeholder="e.g. TCS, Infosys">
+                    </div>
+                    <div class="form-group">
+                        <label>Industry</label>
+                        <input type="text" id="companyIndustry" class="form-control" placeholder="e.g. IT, Finance">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Location <span style="color:#ef4444;">*</span></label>
+                        <input type="text" id="companyLocation" class="form-control" placeholder="City, State">
+                    </div>
+                    <div class="form-group">
+                        <label>Website</label>
+                        <input type="url" id="companyWebsite" class="form-control" placeholder="https://company.com">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>HR Email <span style="color:#ef4444;">*</span></label>
+                        <input type="email" id="companyHrEmail" class="form-control" placeholder="hr@company.com">
+                    </div>
+                    <div class="form-group">
+                        <label>HR Contact</label>
+                        <input type="text" id="companyHrContact" class="form-control" placeholder="HR contact name">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Description</label>
+                    <textarea id="companyDescription" class="form-control" rows="3"
+                        placeholder="Brief company description…" style="resize:vertical;"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="AdmDash.closeModal('companyModal')">Cancel</button>
+                <button class="btn btn-primary" onclick="AdmDash.saveCompany()">💾 Save Company</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════
+     MODAL: VIEW APPLICATION
+═══════════════════════════════════════════════════════════ -->
+    <div class="modal-overlay" id="appDetailModal">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3 id="appDetailTitle">Application Details</h3>
+                <button class="modal-close" onclick="AdmDash.closeModal('appDetailModal')">✕</button>
+            </div>
+            <div class="modal-body" id="appDetailBody"></div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="AdmDash.closeModal('appDetailModal')">Close</button>
+                <button class="btn btn-danger" id="deleteAppBtn">🗑 Delete Application</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════
+     MODAL: CONFIRM DELETE
+═══════════════════════════════════════════════════════════ -->
+    <div class="modal-overlay" id="confirmModal">
+        <div class="modal-box" style="max-width:440px;">
+            <div class="modal-header">
+                <h3 id="confirmTitle">Confirm Action</h3>
+                <button class="modal-close" onclick="AdmDash.closeModal('confirmModal')">✕</button>
+            </div>
+            <div class="modal-body">
+                <p id="confirmMessage" style="font-size:.9rem;color:#374151;"></p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="AdmDash.closeModal('confirmModal')">Cancel</button>
+                <button class="btn btn-danger" id="confirmActionBtn">Confirm</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- TOAST CONTAINER -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- SCRIPTS -->
+    <script src="js/config.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/api-service.js"></script>
+    <script src="js/admin-dashboard.js"></script>
+</body>
+
+</html>

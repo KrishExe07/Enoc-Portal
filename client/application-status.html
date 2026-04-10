@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Application Status | Student</title>
+    <link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+    <header class="main-header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo-section">
+                    <img src="images/charusat-logo.png" alt="CHARUSAT Logo" class="logo-img">
+                    <div class="college-info"><h1>CHARUSAT Portal</h1></div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="container mt-2">
+        <h3>My Applications</h3>
+        <div id="statusList" class="mt-2"></div>
+    </main>
+
+    <script src="js/main.js"></script>
+    <script src="js/applications.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function(){
+            const user = portalUtils.getCurrentUser();
+            if (!user || user.role !== 'student') { window.location.href = 'access-denied.html'; return; }
+            document.querySelector('.user-name')?.textContent = user.name || user.email;
+            initStatusPage();
+        });
+    </script>
+</body>
+</html>

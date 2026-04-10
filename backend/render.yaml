@@ -1,0 +1,27 @@
+services:
+  - type: web
+    name: enoc-portal-backend
+    env: node
+    region: singapore  # closest to India
+    plan: free
+    rootDir: backend
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 5000
+      # Set these manually in Render dashboard → Environment tab:
+      # - key: DB_HOST        (from Railway MySQL)
+      # - key: DB_PORT        (from Railway MySQL)
+      # - key: DB_NAME        (from Railway MySQL)
+      # - key: DB_USER        (from Railway MySQL)
+      # - key: DB_PASSWORD    (from Railway MySQL)
+      # - key: JWT_SECRET     (generate: node -e "console.log(require('crypto').randomBytes(32).toString('hex'))")
+      # - key: GOOGLE_CLIENT_ID
+      # - key: GOOGLE_CLIENT_SECRET
+      # - key: EMAIL_USER
+      # - key: EMAIL_PASSWORD
+      # - key: FRONTEND_URL   (your Vercel URL e.g. https://college-portal.vercel.app)

@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Application Review</title>
+    <link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+    <header class="main-header"><div class="container"><div class="header-content"><div class="logo-section"><img src="images/charusat-logo.png" class="logo-img"><div class="college-info"><h1>CHARUSAT Portal</h1></div></div></div></div></header>
+
+    <main class="container mt-2">
+        <div id="reviewList" class="apps-list"></div>
+    </main>
+
+    <script src="js/main.js"></script>
+    <script src="js/applications.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function(){
+            const user = portalUtils.getCurrentUser();
+            if (!user || (user.role !== 'faculty' && user.role !== 'admin')) { window.location.href = 'access-denied.html'; return; }
+            document.querySelector('.user-name')?.textContent = user.name || user.email;
+            initReviewPage();
+        });
+    </script>
+</body>
+</html>

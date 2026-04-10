@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register | CHARUSAT Portal</title>
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/login.css">
+</head>
+<body>
+    <header class="main-header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo-section">
+                    <img src="images/charusat-logo.png" alt="CHARUSAT Logo" class="logo-img">
+                    <div class="college-info">
+                        <h1>CHAROTAR UNIVERSITY OF SCIENCE &amp; TECHNOLOGY</h1>
+                        <p class="tagline">Excellence in Education &amp; Innovation</p>
+                    </div>
+                </div>
+                <nav class="main-nav">
+                    <ul>
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="about.html">About</a></li>
+                        <li><a href="contact.html">Contact</a></li>
+                        <li><a href="register.html" class="active">Register</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <main class="login-section">
+        <div class="login-container">
+            <div class="login-box">
+                <div class="login-header">
+                    <h3>Student Registration</h3>
+                    <p>Register with your college email to create a student account</p>
+                </div>
+
+                <form id="registerForm" class="login-form" novalidate>
+                    <div class="form-group">
+                        <label for="fullName">Full Name</label>
+                        <input id="fullName" type="text" required placeholder="Your full name">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="email">College Email</label>
+                        <input id="email" type="email" required placeholder="24it068@charusat.edu.in">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <input id="password" type="password" required placeholder="Create a password">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="confirmPassword">Confirm Password</label>
+                        <input id="confirmPassword" type="password" required placeholder="Repeat password">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="studentId">Student ID (optional)</label>
+                        <input id="studentId" type="text" placeholder="STU-2026-001">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="department">Department (optional)</label>
+                        <input id="department" type="text" placeholder="Computer Science">
+                    </div>
+
+                    <div class="mt-2"><button type="submit" class="btn btn-primary btn-block">Create Account</button></div>
+
+                    <div class="form-links mt-2">
+                        <a href="index.html">Back to Login</a>
+                    </div>
+                </form>
+
+                <div class="demo-credentials mt-2">
+                    <p class="demo-title">Note</p>
+                    <p class="muted">Registration is intended for students. Faculty and admin accounts are managed by the administration.</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="js/main.js"></script>
+    <script src="js/crud.js"></script>
+    <script>
+        document.getElementById('registerForm').addEventListener('submit', function(e){
+            e.preventDefault();
+            const name = document.getElementById('fullName').value.trim();
+            const email = document.getElementById('email').value.trim().toLowerCase();
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            const studentId = document.getElementById('studentId').value.trim();
+            const department = document.getElementById('department').value.trim();
+
+            // Basic validation
+            if (!name || !email || !password || !confirmPassword) {
+                portalUtils.showNotification('Please fill in all required fields', 'warning');
+                return;
+            }
+
+            if (!portalUtils.validateEmail(email) || !email.endsWith('@charusat.edu.in')) {
+                portalUtils.showNotification('Please use a valid college email ending with @charusat.edu.in', 'warning');
+                return;
+            }
+
+            if (password.length < 6) {
+                portalUtils.showNotification('Password must be at least 6 characters', 'warning');
+                return;
+            }
+
+            if (password !== confirmPassword) {
+                portalUtils.showNotification('Passwords do not match', 'warning');
+                return;
+            }
+
+            // Check duplicate
+            const users = portalUtils.getFromStorage('users') || [];
+            if (users.find(u => u.email && u.email.toLowerCase() === email)) {
+                portalUtils.showNotification('An account with this email already exists', 'warning');
+                return;
+            }
+
+            // Create the user (students only)
+            const year = new Date().getFullYear();
+            const generatedId = studentId || ('STU-' + year + '-' + Math.floor(Math.random() * 900 + 100));
+            const newUser = { email, password, role: 'student', name, id: generatedId, department };
+
+            // Use portalCRUD if available, otherwise fallback to direct storage
+            if (window.portalCRUD && typeof portalCRUD.createUser === 'function') {
+                portalCRUD.createUser(newUser);
+            } else {
+                users.push(newUser);
+                portalUtils.saveToStorage('users', users);
+            }
+
+            // Auto-login user
+            const userData = { email, name, id: generatedId, role: 'student', department, loginTime: new Date().toISOString() };
+            portalUtils.saveToStorage('currentUser', userData);
+            portalUtils.showNotification('Account created. Redirecting to dashboard...', 'success');
+            setTimeout(() => window.location.href = 'student-dashboard.html', 1200);
+        });
+    </script>
+</body>
+</html>
