@@ -7,7 +7,7 @@ const express = require('express');
 const router = express.Router();
 const { authenticate, authorize } = require('../middleware/auth');
 const { NOCRequest, EmailLog, Company } = require('../models');
-const nodemailer = require('nodemailer');
+const { sendEmail } = require('../services/emailService');
 
 /**
  * @route   POST /api/email/send-noc/:nocId
@@ -34,22 +34,13 @@ router.post('/send-noc/:nocId', authenticate, authorize('faculty', 'admin'), asy
             });
         }
 
-        // Create email transporter
-        const transporter = nodemailer.createTransport({
-            service: process.env.EMAIL_SERVICE || 'gmail',
-            auth: {
-                user: process.env.EMAIL_USER,
-                pass: process.env.EMAIL_PASSWORD
-            }
-        });
-
         const recipients = [
             nocRequest.studentEmail,
             nocRequest.company.hrEmail
         ];
 
-        const mailOptions = {
-            from: process.env.EMAIL_FROM,
+        // Send email using service
+        await sendEmail({
             to: recipients,
             cc: req.user.email,
             subject: `Signed NOC – Internship Approval for ${nocRequest.studentName}`,
@@ -61,18 +52,14 @@ router.post('/send-noc/:nocId', authenticate, authorize('faculty', 'admin'), asy
                 <br>
                 <p>Best regards,<br>${req.user.name}<br>${req.user.designation || 'Faculty'}</p>
             `
-        };
-
-        // Send email
-        await transporter.sendMail(mailOptions);
+        });
 
         // Log email
         await EmailLog.create({
             nocRequestId: nocRequest.id,
             sentTo: recipients,
             cc: [req.user.email],
-            subject: mailOptions.subject,
-            body: mailOptions.html,
+            subject: `Signed NOC – Internship Approval for ${nocRequest.studentName}`,
             status: 'sent',
             sentAt: new Date()
         });
