@@ -17,7 +17,7 @@ const googleAuth = {
     //
     // Current Client ID: <YOUR_GOOGLE_CLIENT_ID>
     // ═══════════════════════════════════════════════════════════════════════════════
-    clientId: '868247521851-iqqo7j373g2vubp61nhga5sdscceet4a.apps.googleusercontent.com',
+    clientId: '868247521851-cp87aelb3mrkkm33kot9htpflj0ti2ds.apps.googleusercontent.com',
 
     // Domain validation rules
     // Students: @charusat.edu.in (or subdomains like @it.charusat.edu.in)
@@ -147,18 +147,18 @@ const googleAuth = {
             console.error('Error stack:', error.stack);
 
             // Check for network/backend errors
-            if (error.message.includes('fetch') || 
-                error.message.includes('NetworkError') || 
+            if (error.message.includes('fetch') ||
+                error.message.includes('NetworkError') ||
                 error.message.includes('Failed to fetch') ||
                 error.name === 'TypeError' ||
                 error.message.toLowerCase().includes('network') ||
                 error.message.toLowerCase().includes('connection') ||
                 error.message.toLowerCase().includes('refused')) {
-                
+
                 console.error('🚨 BACKEND NOT RESPONDING - This is expected during startup or if backend crashed');
                 console.error('   Backend should be running on http://localhost:5000');
                 console.error('   If using npm start, backend starts automatically but may take a few seconds');
-                
+
                 portalUtils.showNotification(
                     '⚠️ Authentication server temporarily unavailable.\n\n' +
                     'If you just started the application:\n' +
@@ -169,7 +169,7 @@ const googleAuth = {
                     '• Or run: cd backend && npm run dev',
                     'warning'
                 );
-                
+
                 // Don't block the page - just show the error
                 return;
             }
@@ -216,10 +216,10 @@ const googleAuth = {
 
         // Basic domain type check
         const basicCheck = allowedDomains.includes(domainType);
-        
+
         // CHARUSAT-specific full domain check
         const charusatCheck = this.isValidCHARUSATEmail(email, role);
-        
+
         return basicCheck && charusatCheck;
     },
 
@@ -234,17 +234,17 @@ const googleAuth = {
         if (parts.length !== 2) return false;
 
         const domain = parts[1].toLowerCase();
-        
+
         // For students: must end with charusat.edu.in (allows subdomains)
         if (role === 'student') {
             return domain.endsWith('charusat.edu.in');
         }
-        
+
         // For faculty/admin: must end with charusat.ac.in (allows subdomains)
         if (role === 'faculty' || role === 'admin') {
             return domain.endsWith('charusat.ac.in');
         }
-        
+
         return false;
     },
 
